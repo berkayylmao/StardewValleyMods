@@ -33,14 +33,14 @@ namespace ShipEverything {
          }
          public static class ShippingMenu {
             public class SVObjectEx : StardewValley.Object {
-               public delegate void drawInMenuDelegate(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency, Single layerDepth, Boolean drawStackNumber, Color color, Boolean drawShadow);
+               public delegate void drawInMenuDelegate(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency, Single layerDepth, StardewValley.StackDrawType drawStackNumber, Color color, Boolean drawShadow);
                private drawInMenuDelegate orgCall;
                public SVObjectEx(StardewValley.Item item) : base() {
                   var salePrice = Math.Max(1, item.salePrice());
                   orgCall = new drawInMenuDelegate(item.drawInMenu);
                   this.Category = item.Category;
                   this.DisplayName = item.DisplayName;
-                  this.hasBeenInInventory = item.hasBeenInInventory;
+                  this.HasBeenInInventory = item.HasBeenInInventory;
                   this.Name = item.Name;
                   this.ParentSheetIndex = item.ParentSheetIndex;
                   this.Price = salePrice;
@@ -48,12 +48,12 @@ namespace ShipEverything {
                   this.SpecialVariable = item.SpecialVariable;
                }
 
-               public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency, Single layerDepth, Boolean drawStackNumber, Color color, Boolean drawShadow) {
+               public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency, Single layerDepth, StardewValley.StackDrawType drawStackNumber, Color color, Boolean drawShadow) {
                   orgCall(spriteBatch, location, scaleSize, transparency, layerDepth, drawStackNumber, color, drawShadow);
                }
             }
             public static void postfix_parseItems(IList<StardewValley.Item> items,
-               ref List<List<StardewValley.Item>> ___categoryItems, ref List<Int32> ___categoryTotals, ref List<MoneyDial> ___categoryDials) {
+               ref List<List<StardewValley.Item>> ___categoryItems, ref List<Int32> ___categoryTotals, ref List<MoneyDial> ___categoryDials, ref Dictionary<StardewValley.Item, int> ___itemValues) {
                Int32 gainedMoney = 0;
                foreach (var item in items) {
                   if (!(item is StardewValley.Object)) {
@@ -64,6 +64,7 @@ namespace ShipEverything {
                      ___categoryTotals[4] += salePrice;
                      ___categoryTotals[5] += salePrice;
                      ___categoryDials[4].previousTargetValue = ___categoryDials[4].currentValue = ___categoryTotals[4];
+                     ___itemValues[_obj] = salePrice;
                      gainedMoney += salePrice;
                      StardewValley.Game1.stats.itemsShipped += 1;
                   }
