@@ -327,21 +327,21 @@ namespace ChestEx {
             harmony.Patch(ctor, null, null, patch);
          }
 
-         Boolean hasChestsAnywhere = false;
-         foreach (var item in helper.ModRegistry.GetAll()) {
-            if (item.Manifest.UniqueID == strChestsAnywhereUID) {
-               hasChestsAnywhere = true;
-               break;
-            }
-         }
-         if (hasChestsAnywhere) {
-            this.Monitor.Log("ChestsAnywhere is found, installing dynamic compatibility patches...", LogLevel.Info);
-            this.Monitor.Log($"ChestsAnywhere version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.16.1 (Release) as base.", LogLevel.Debug);
-            var typeChestsAnywhere_ChestContainer = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
-            var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.ManageChestOverlay, ChestsAnywhere");
-            harmony.Patch(AccessTools.Method(typeChestsAnywhere_ChestContainer, "OpenMenu"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ChestContainer).GetMethod("OpenMenu_TranspilerPatches")));
-            harmony.Patch(AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "ReinitialiseComponents"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ManageChestOverlay).GetMethod("ReinitialiseComponents_TranspilerPatches")));
-         }
+        //Boolean hasChestsAnywhere = false;
+        //foreach (var item in helper.ModRegistry.GetAll()) {
+        //   if (item.Manifest.UniqueID == strChestsAnywhereUID) {
+        //      hasChestsAnywhere = true;
+        //      break;
+        //   }
+        //}
+        //if (hasChestsAnywhere) {
+        //   this.Monitor.Log("ChestsAnywhere is found, installing dynamic compatibility patches...", LogLevel.Info);
+        //   this.Monitor.Log($"ChestsAnywhere version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.16.1 (Release) as base.", LogLevel.Debug);
+        //   var typeChestsAnywhere_ChestContainer = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
+        //   var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere");
+        //   harmony.Patch(AccessTools.Method(typeChestsAnywhere_ChestContainer, "OpenMenu"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ChestContainer).GetMethod("OpenMenu_TranspilerPatches")));
+        //   harmony.Patch(AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "ReinitializeComponents"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ManageChestOverlay).GetMethod("ReinitialiseComponents_TranspilerPatches")));
+        //}
       }
    }
 }

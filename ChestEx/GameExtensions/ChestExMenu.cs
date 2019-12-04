@@ -76,7 +76,7 @@ namespace ChestEx {
          public delegate void tUpdate(GameTime time);
          public delegate void tMovePosition(Int32 dx, Int32 dy);
          public delegate void tPerformHoverAction(Int32 x, Int32 y);
-         public delegate void tDraw(SpriteBatch b, Boolean drawUpperPortion, Boolean drawDescriptionArea);
+         public delegate void tDraw(SpriteBatch b, Boolean drawUpperPortion, Boolean drawDescriptionArea, Int32 red, Int32 green, Int32 blue);
          public delegate void tReceiveLeftClick(Int32 x, Int32 y, Boolean playSound);
          public delegate void tReceiveRightClick(Int32 x, Int32 y, Boolean playSound);
          public delegate ClickableComponent tGetComponentWithID(Int32 id);
@@ -97,7 +97,7 @@ namespace ChestEx {
       }
 
       public static Int32 bgXDiff = 0;
-      public static Int32 bgYDiff => Config.instance.rows > 3 ? 36 * (Config.instance.rows - 3) : 0;
+      public static Int32 bgYDiff => Config.instance.rows > 3 ? 48 * (Config.instance.rows - 3) : 0;
 
       private DeepBaseCalls deepBaseCalls = new DeepBaseCalls();
 
@@ -124,8 +124,21 @@ namespace ChestEx {
          };
       }
       private void setOrganizeButton() {
+         this.fillStacksButton = new ClickableTextureComponent(
+             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.yPositionOnScreen - IClickableMenu.borderWidth + 64 + 16, 64, 64),
+             Game1.mouseCursors,
+             new Rectangle(103, 469, 16, 16),
+             4f,
+             false) {
+            hoverText = Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"),
+            myID = 12952,
+            upNeighborID = 27346,
+            downNeighborID = 106,
+            leftNeighborID = 53921,
+            region = 15923
+         };
          this.organizeButton = new ClickableTextureComponent(
-             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.yPositionOnScreen - IClickableMenu.borderWidth + 70, 64, 64),
+             new Rectangle(this.fillStacksButton.bounds.X, this.fillStacksButton.bounds.Y + 64 + 16, 64, 64),
              Game1.mouseCursors,
              new Rectangle(162, 440, 16, 16),
              4f,
@@ -136,9 +149,9 @@ namespace ChestEx {
             downNeighborID = 5948
          };
          this.trashCan = new ClickableTextureComponent(
-             new Rectangle(this.organizeButton.bounds.X, this.inventory.yPositionOnScreen, 64, 104),
+             new Rectangle(this.organizeButton.bounds.X, this.organizeButton.bounds.Y + 64 + 64 + 16, 64, 104),
              Game1.mouseCursors,
-             new Rectangle(669, 261, 16, 26),
+             new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26),
              4f,
              false) {
             myID = 5948,
@@ -227,24 +240,33 @@ namespace ChestEx {
          }
       }
       public override void performHoverAction(Int32 x, Int32 y) {
+         this.hoveredItem = null;
+         this.hoverText = "";
+         deepBaseCalls.pPerformHoverAction(x, y);
+
          if (this.colorPickerToggleButton != null) {
             this.colorPickerToggleButton.tryHover(x, y, 0.25f);
-            if (this.colorPickerToggleButton.containsPoint(x, y)) {
+            if (this.colorPickerToggleButton.containsPoint(x, y))
                this.hoverText = this.colorPickerToggleButton.hoverText;
-               return;
-            }
-         }
-         if (this.ItemsToGrabMenu.isWithinBounds(x, y) && this.showReceivingMenu) {
-            this.hoveredItem = this.ItemsToGrabMenu.hover(x, y, this.heldItem);
-         } else {
-            deepBaseCalls.pPerformHoverAction(x, y);
          }
          if (this.organizeButton != null) {
-            this.hoverText = null;
             this.organizeButton.tryHover(x, y, 0.1f);
-            if (this.organizeButton.containsPoint(x, y)) {
+            if (this.organizeButton.containsPoint(x, y))
                this.hoverText = this.organizeButton.hoverText;
+         }
+         if (this.fillStacksButton != null) {
+            this.fillStacksButton.tryHover(x, y, 0.25f);
+            if (this.fillStacksButton.containsPoint(x, y))
+               this.hoverText = this.fillStacksButton.hoverText;
+         }
+         if (this.showReceivingMenu) {
+            Item item_grab_hovered_item = this.ItemsToGrabMenu.hover(x, y, this.heldItem);
+            if (item_grab_hovered_item != null) {
+               this.hoveredItem = item_grab_hovered_item;
             }
+         }
+         if (this.hoverText != null) {
+            return;
          }
          if (this.chestColorPicker != null) {
             this.chestColorPicker.performHoverAction(x, y);
@@ -315,6 +337,15 @@ namespace ChestEx {
                this.context).setEssential(this.essential);
             (Game1.activeClickableMenu as ChestExMenu).heldItem = this.heldItem;
             Game1.playSound("Ship");
+            return;
+         }
+         if (this.fillStacksButton != null && this.fillStacksButton.containsPoint(x, y)) {
+            this.FillOutStacks();
+            Game1.playSound("Ship");
+            return;
+         }
+         if (this.heldItem != null && !this.isWithinBounds(x, y) && this.heldItem.canBeTrashed()) {
+            this.DropHeldItem();
          }
       }
       public override void receiveRightClick(Int32 x, Int32 y, Boolean playSound = true) {
@@ -369,6 +400,39 @@ namespace ChestEx {
             organizeItemsInList(Game1.player.Items);
             Game1.playSound("Ship");
          }
+         if (b == Buttons.RightShoulder) {
+            ClickableComponent fill_stacks_component = base.getComponentWithID(12952);
+            if (fill_stacks_component != null) {
+               this.setCurrentlySnappedComponentTo(fill_stacks_component.myID);
+               this.snapCursorToCurrentSnappedComponent();
+            } else {
+               int highest_y = -1;
+               ClickableComponent highest_component = null;
+               foreach (ClickableComponent component in this.allClickableComponents) {
+                  if (component.region == 15923 && (highest_y == -1 || component.bounds.Y < highest_y)) {
+                     highest_y = component.bounds.Y;
+                     highest_component = component;
+                  }
+               }
+               if (highest_component != null) {
+                  this.setCurrentlySnappedComponentTo(highest_component.myID);
+                  this.snapCursorToCurrentSnappedComponent();
+               }
+            }
+         }
+         if (b == Buttons.LeftShoulder) {
+            ClickableComponent component2 = base.getComponentWithID(53910);
+            if (component2 != null) {
+               this.setCurrentlySnappedComponentTo(component2.myID);
+               this.snapCursorToCurrentSnappedComponent();
+               return;
+            }
+            component2 = base.getComponentWithID(0);
+            if (component2 != null) {
+               this.setCurrentlySnappedComponentTo(0);
+               this.snapCursorToCurrentSnappedComponent();
+            }
+         }
       }
 
       private void fixInternalDrawCallBoundaries() {
@@ -394,15 +458,17 @@ namespace ChestEx {
             b.Draw(Game1.fadeToBlackRect, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.Black * 0.5f);
 
          fixInternalDrawCallBoundaries();
-         deepBaseCalls.pDraw(b, false, false);
+         deepBaseCalls.pDraw(b, false, false, -1, -1, -1);
          unFixInternalDrawCallBoundaries();
 
          if (this.showReceivingMenu) {
+            fixInternalDrawCallBoundaries();
             // backpack icon bg
             b.Draw(Game1.mouseCursors, new Vector2(this.xPositionOnScreen - 64, this.yPositionOnScreen + (this.height / 2) + 64 + 16), new Rectangle?(new Rectangle(16, 368, 12, 16)), Color.White, 4.712389f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             b.Draw(Game1.mouseCursors, new Vector2(this.xPositionOnScreen - 64, this.yPositionOnScreen + (this.height / 2) + 64 - 16), new Rectangle?(new Rectangle(21, 368, 11, 16)), Color.White, 4.712389f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             // backpack icon
             b.Draw(Game1.mouseCursors, new Vector2(this.xPositionOnScreen - 40, this.yPositionOnScreen + (this.height / 2) + 64 - 44), new Rectangle?(new Rectangle(4, 372, 8, 11)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+            unFixInternalDrawCallBoundaries();
 
             Game1.drawDialogueBox(this.ItemsToGrabMenu.xPositionOnScreen - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder,
                this.ItemsToGrabMenu.yPositionOnScreen - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + 16,
@@ -419,14 +485,22 @@ namespace ChestEx {
          }
          if (this.poof != null)
             this.poof.draw(b, true, 0, 0, 1f);
+         foreach (ItemGrabMenu.TransferredItemSprite transferredItemSprite in this._transferredItemSprites)
+            transferredItemSprite.Draw(b);
          if (this.colorPickerToggleButton != null)
             this.colorPickerToggleButton.draw(b);
          if (this.chestColorPicker != null)
             this.chestColorPicker.draw(b);
          if (this.organizeButton != null)
             this.organizeButton.draw(b);
-         if (this.hoverText != null && (this.hoveredItem == null || this.hoveredItem == null || this.ItemsToGrabMenu == null))
-            IClickableMenu.drawHoverText(b, this.hoverText, Game1.smallFont, 0, 0, -1, null, -1, null, null, 0, -1, -1, -1, -1, 1f, null);
+         if (this.fillStacksButton != null)
+            this.fillStacksButton.draw(b);
+         if ((this.hoverText != null && !String.IsNullOrWhiteSpace(this.hoverText)) && (this.hoveredItem == null || this.hoveredItem == null || this.ItemsToGrabMenu == null)) {
+            if (this.hoverAmount > 0)
+               IClickableMenu.drawToolTip(b, this.hoverText, "", null, true, -1, 0, -1, -1, null, this.hoverAmount);
+            else
+               IClickableMenu.drawHoverText(b, this.hoverText, Game1.smallFont, 0, 0, -1, null, -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
+         }
          if (this.heldItem != null)
             this.heldItem.drawInMenu(b, new Vector2(Game1.getOldMouseX() + 8, Game1.getOldMouseY() + 8), 1f);
          if (this.hoveredItem != null) {
@@ -435,6 +509,7 @@ namespace ChestEx {
             IClickableMenu.drawToolTip(b, this.ItemsToGrabMenu.descriptionText, this.ItemsToGrabMenu.descriptionTitle, this.hoveredItem, this.heldItem != null, -1, 0, -1, -1, null, -1);
          }
          Game1.mouseCursorTransparency = 1f;
+
          deepBaseCalls.pDrawMouse(b);
          fixExternalDrawCallBoundaries();
       }
@@ -494,7 +569,7 @@ namespace ChestEx {
             deepBaseCalls.pUpdate = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tUpdate>(this, "update", new Type[] { typeof(GameTime) });
             deepBaseCalls.pMovePosition = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tMovePosition>(this, "movePosition", new Type[] { typeof(Int32), typeof(Int32) });
             deepBaseCalls.pPerformHoverAction = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tPerformHoverAction>(this, "performHoverAction", new Type[] { typeof(Int32), typeof(Int32) });
-            deepBaseCalls.pDraw = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tDraw>(this, "draw", new Type[] { typeof(SpriteBatch), typeof(Boolean), typeof(Boolean) });
+            deepBaseCalls.pDraw = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tDraw>(this, "draw", new Type[] { typeof(SpriteBatch), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Int32), typeof(Int32) });
             deepBaseCalls.pReceiveLeftClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveLeftClick>(this, "receiveLeftClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
             deepBaseCalls.pReceiveRightClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveRightClick>(this, "receiveRightClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
             deepBaseCalls.pGetComponentWithID = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tGetComponentWithID>(this, "getComponentWithID", new Type[] { typeof(Int32) });
@@ -508,6 +583,10 @@ namespace ChestEx {
             }
          }
 
+         this.inventory.yPositionOnScreen += bgYDiff;
+         foreach (var item in this.inventory.inventory) {
+            item.bounds.Y += bgYDiff;
+         }
          this.ItemsToGrabMenu = new InventoryMenu(this.inventory.xPositionOnScreen + bgXDiff,
                                      this.inventory.yPositionOnScreen + 16 - (64 * Config.instance.rows) - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder,
                                      false, inventory, null, Config.instance.getCapacity(), Config.instance.rows, 0, 0, true);
@@ -515,8 +594,7 @@ namespace ChestEx {
 
          if (source == 1 && sourceItem != null && sourceItem is Chest) {
             setColorPicker();
-            if (Game1.player.showChestColorPicker)
-               this.chestColorPicker.visible = Game1.player.showChestColorPicker = false;
+            this.chestColorPicker.visible = Game1.player.showChestColorPicker;
          }
          this.context = context;
 
@@ -539,11 +617,7 @@ namespace ChestEx {
          if (showOrganizeButton) {
             setOrganizeButton();
          }
-         if ((Game1.isAnyGamePadButtonBeingPressed() || !Game1.lastCursorMotionWasMouse) && this.ItemsToGrabMenu.actualInventory.Count > 0 && Game1.activeClickableMenu == null) {
-            Game1.setMousePosition(this.inventory.inventory[0].bounds.Center);
-         }
          if (Game1.options.snappyMenus && Game1.options.gamepadControls) {
-
             for (Int32 k = 0; k < 12; k++) {
                if (this.inventory != null && this.inventory.inventory != null && this.inventory.inventory.Count >= 12) {
                   this.inventory.inventory[k].upNeighborID = (this.shippingBin ? 12598 : ((this.discreteColorPickerCC != null && this.ItemsToGrabMenu != null && this.ItemsToGrabMenu.inventory.Count <= k) ? 4343 : ((this.ItemsToGrabMenu.inventory.Count > k) ? (53910 + k) : 53910)));
