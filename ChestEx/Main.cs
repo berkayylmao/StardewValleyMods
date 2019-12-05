@@ -132,7 +132,7 @@ namespace ChestEx {
                foreach (var instruction in instructions) {
                   if (instruction.opcode == OpCodes.Ldc_I4_S
                       && (SByte)instruction.operand == 36) {
-                     yield return new CodeInstruction(OpCodes.Ldc_I4_S, (SByte)Math.Min(SByte.MaxValue, Config.instance.getCapacity()));
+                     yield return new CodeInstruction(OpCodes.Ldc_I4, Math.Min(Int32.MaxValue, Config.instance.getCapacity()));
                      continue;
                   }
                   yield return instruction;
