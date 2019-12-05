@@ -167,129 +167,47 @@ namespace ChestEx {
          public static class ManageChestOverlay {
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> ReinitialiseComponents_TranspilerPatches(IEnumerable<CodeInstruction> instructions, ILGenerator ilg) {
-               var typeChestsAnywhere_Tab = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Components.Tab, ChestsAnywhere");
-               var typeChestsAnywhere_ManagedChest = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.ManagedChest, ChestsAnywhere");
-               var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.ManageChestOverlay, ChestsAnywhere");
-               var typeChestsAnywhere_ChestContainer = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
+               var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere");
+               var xna_Rectangle_ctor = typeof(Microsoft.Xna.Framework.Rectangle).GetConstructor(AccessTools.all, null,
+                  new Type[] { typeof(Int32), typeof(Int32), typeof(Int32), typeof(Int32) }, null);
 
-               var getTabSizeMethodInfo = Harmony.AccessTools.Method(typeChestsAnywhere_Tab, "GetTabSize");
-               var getContainerMethodInfo = Harmony.AccessTools.Method(typeChestsAnywhere_ManagedChest, "get_Container");
-               var getDisplayNameMethodInfo = Harmony.AccessTools.Method(typeChestsAnywhere_ManagedChest, "get_DisplayName");
-               var getSelectedCategoryMethodInfo = Harmony.AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "get_SelectedCategory");
-               var getShowCategoryDropdownMethodInfo = Harmony.AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "get_ShowCategoryDropdown");
-
-               Boolean skipOriginalPositionCode = false, skipToPatchAddress = false, doPatching = false, patchingCategoryTab = true;
-               Boolean markPostPatchCode = false, didAllPatches = false;
-               var lblEditSuccessful = ilg.DefineLabel();
-               var lblEditUserSelectedNoCategoryDropDown = ilg.DefineLabel();
+               Boolean didAllPatches = false;
+               Label lblNotChestExMenu = ilg.DefineLabel();
 
                foreach (var instruction in instructions) {
                   if (!didAllPatches) {
-                     if (patchingCategoryTab) {
-                        if (instruction.opcode == OpCodes.Call &&
-                              (MethodBase)instruction.operand == getTabSizeMethodInfo) {
-                           skipToPatchAddress = true;
-                        }
-                        if (doPatching) {
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "xPositionOnScreen"));
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "yPositionOnScreen"));
-                           yield return new CodeInstruction(OpCodes.Ldc_I4, Game1.tileSize);
-                           yield return new CodeInstruction(OpCodes.Sub);
-                           skipOriginalPositionCode = true;
-                           doPatching = false;
-                        }
-                        if (skipToPatchAddress) {
-                           yield return instruction;
-                           if (instruction.opcode != OpCodes.Call ||
-                                 (MethodBase)instruction.operand != getSelectedCategoryMethodInfo) {
-                              continue;
-                           } else if (instruction.opcode == OpCodes.Call &&
-                                 (MethodBase)instruction.operand == getSelectedCategoryMethodInfo) {
-                              skipToPatchAddress = false;
-                              doPatching = true;
-                              continue;
-                           }
-                        }
-                        if (skipOriginalPositionCode) {
-                           if (instruction.opcode == OpCodes.Ldfld
-                                 && (FieldInfo)instruction.operand == AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Font")) {
-                              yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-                              yield return new CodeInstruction(OpCodes.Ldarg_0);
-                              yield return instruction;
-                              patchingCategoryTab = skipToPatchAddress = skipOriginalPositionCode = false;
-                           }
-                           continue;
-                        }
-                     } else {
-                        if (instruction.opcode == OpCodes.Callvirt &&
-                              (MethodBase)instruction.operand == getDisplayNameMethodInfo) {
-                           yield return new CodeInstruction(OpCodes.Pop);
-                           yield return new CodeInstruction(OpCodes.Pop);
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Call, getShowCategoryDropdownMethodInfo);
-                           yield return new CodeInstruction(OpCodes.Brfalse, lblEditUserSelectedNoCategoryDropDown);
+                     if (instruction.opcode == OpCodes.Call &&
+                           (MethodBase)instruction.operand == xna_Rectangle_ctor) {
+                        yield return instruction;
 
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Chest"));
-                           yield return instruction;
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "CategoryTab"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.ClickableComponent), "bounds"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Microsoft.Xna.Framework.Rectangle), "X"));
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "CategoryTab"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.ClickableComponent), "bounds"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Microsoft.Xna.Framework.Rectangle), "Width"));
-                           yield return new CodeInstruction(OpCodes.Add);
-                           yield return new CodeInstruction(OpCodes.Ldc_I4, Game1.smallestTileSize);
-                           yield return new CodeInstruction(OpCodes.Add);
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "CategoryTab"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.ClickableComponent), "bounds"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Microsoft.Xna.Framework.Rectangle), "Y"));
-                           yield return new CodeInstruction(OpCodes.Br, lblEditSuccessful);
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
+                        yield return new CodeInstruction(OpCodes.Isinst, typeof(ChestExMenu));
+                        yield return new CodeInstruction(OpCodes.Brfalse, lblNotChestExMenu);
 
-                           var skip_UserSelectedNoCategoryDropDown = new CodeInstruction(OpCodes.Nop);
-                           skip_UserSelectedNoCategoryDropDown.labels.Add(lblEditUserSelectedNoCategoryDropDown);
-                           yield return skip_UserSelectedNoCategoryDropDown;
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Chest"));
-                           yield return instruction;
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "xPositionOnScreen"));
-                           yield return new CodeInstruction(OpCodes.Ldarg_0);
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
-                           yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "yPositionOnScreen"));
-                           yield return new CodeInstruction(OpCodes.Ldc_I4, Game1.tileSize);
-                           yield return new CodeInstruction(OpCodes.Sub);
-                           yield return new CodeInstruction(OpCodes.Br, lblEditSuccessful);
+                        yield return new CodeInstruction(OpCodes.Ldloca_S, 0);
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "xPositionOnScreen"));
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.MenuWithInventory), "inventory"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "yPositionOnScreen"));
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "width"));
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Menu"));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Menus.IClickableMenu), "height"));
+                        yield return instruction;
 
-                           markPostPatchCode = true;
-                        }
-                        if (markPostPatchCode) {
-                           if (instruction.opcode == OpCodes.Ldfld
-                                 && (FieldInfo)instruction.operand == AccessTools.Field(typeChestsAnywhere_ManageChestOverlay, "Font")) {
-                              var skip_EditSuccessful = new CodeInstruction(OpCodes.Ldc_I4_1);
-                              skip_EditSuccessful.labels.Add(lblEditSuccessful);
-                              yield return skip_EditSuccessful;
-                              yield return new CodeInstruction(OpCodes.Ldarg_0);
-                              yield return instruction;
-                              markPostPatchCode = false;
-                              didAllPatches = true;
-                              continue;
-                           }
-                        }
+                        var skipCode = new CodeInstruction(OpCodes.Nop);
+                        skipCode.labels.Add(lblNotChestExMenu);
+                        yield return skipCode;
+                        didAllPatches = true;
+
+                        continue;
                      }
                   }
                   yield return instruction;
@@ -327,21 +245,14 @@ namespace ChestEx {
             harmony.Patch(ctor, null, null, patch);
          }
 
-        //Boolean hasChestsAnywhere = false;
-        //foreach (var item in helper.ModRegistry.GetAll()) {
-        //   if (item.Manifest.UniqueID == strChestsAnywhereUID) {
-        //      hasChestsAnywhere = true;
-        //      break;
-        //   }
-        //}
-        //if (hasChestsAnywhere) {
-        //   this.Monitor.Log("ChestsAnywhere is found, installing dynamic compatibility patches...", LogLevel.Info);
-        //   this.Monitor.Log($"ChestsAnywhere version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.16.1 (Release) as base.", LogLevel.Debug);
-        //   var typeChestsAnywhere_ChestContainer = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
-        //   var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere");
-        //   harmony.Patch(AccessTools.Method(typeChestsAnywhere_ChestContainer, "OpenMenu"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ChestContainer).GetMethod("OpenMenu_TranspilerPatches")));
-        //   harmony.Patch(AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "ReinitializeComponents"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ManageChestOverlay).GetMethod("ReinitialiseComponents_TranspilerPatches")));
-        //}
+         if (helper.ModRegistry.IsLoaded(strChestsAnywhereUID)) {
+            this.Monitor.Log("ChestsAnywhere is found, installing dynamic compatibility patches...", LogLevel.Info);
+            this.Monitor.Log($"ChestsAnywhere version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.17.1 (Release) as base.", LogLevel.Debug);
+            var typeChestsAnywhere_ChestContainer = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
+            var typeChestsAnywhere_ManageChestOverlay = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere");
+            harmony.Patch(AccessTools.Method(typeChestsAnywhere_ChestContainer, "OpenMenu"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ChestContainer).GetMethod("OpenMenu_TranspilerPatches")));
+            harmony.Patch(AccessTools.Method(typeChestsAnywhere_ManageChestOverlay, "ReinitializeComponents"), null, null, new HarmonyMethod(typeof(ChestsAnywhereCompatibility.ManageChestOverlay).GetMethod("ReinitialiseComponents_TranspilerPatches")));
+         }
       }
    }
 }
