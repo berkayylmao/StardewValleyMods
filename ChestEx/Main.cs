@@ -248,7 +248,7 @@ namespace ChestEx {
 
          if (helper.ModRegistry.IsLoaded(strAutomateUID)) {
             this.Monitor.Log("Automate is found, installing dynamic compatibility patches...", LogLevel.Info);
-            this.Monitor.Log($"Automate version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.14.0 (Release) as base.", LogLevel.Debug);
+            this.Monitor.Log($"Automate version: {helper.ModRegistry.Get(strAutomateUID).Manifest.Version}, dynamic compability patch is made with v1.14.0 (Release) as base.", LogLevel.Debug);
             var typeAutomate_ChestContainer = Type.GetType("Pathoschild.Stardew.Automate.Framework.Storage.ChestContainer, Automate");
             harmony.Patch(AccessTools.Method(typeAutomate_ChestContainer, "Store"), null, null, new HarmonyMethod(typeof(ChestExtensions.CapacityRaiser).GetMethod("TranspilerPatches")));
          }
