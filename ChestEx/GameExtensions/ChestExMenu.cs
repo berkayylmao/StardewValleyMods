@@ -406,7 +406,7 @@ namespace ChestEx {
                this.setCurrentlySnappedComponentTo(fill_stacks_component.myID);
                this.snapCursorToCurrentSnappedComponent();
             } else {
-               int highest_y = -1;
+               Int32 highest_y = -1;
                ClickableComponent highest_component = null;
                foreach (ClickableComponent component in this.allClickableComponents) {
                   if (component.region == 15923 && (highest_y == -1 || component.bounds.Y < highest_y)) {

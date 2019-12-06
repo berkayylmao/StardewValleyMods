@@ -92,13 +92,13 @@ namespace ChestEx {
             public static IEnumerable<CodeInstruction> TranspilerPatches(IEnumerable<CodeInstruction> instructions) {
                MethodBase[] _orgCalls = {
                         typeof(ItemGrabMenu).GetConstructor(AccessTools.all, null,
-                           new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(string), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) }, null),
+                           new Type[] { typeof(IList<Item>), typeof(Boolean), typeof(Boolean), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(String), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Item), typeof(Int32), typeof(System.Object) }, null),
                         typeof(ItemGrabMenu.behaviorOnItemSelect).GetConstructor(AccessTools.all, null,
                            new Type[] { typeof(Item), typeof(Farmer) }, null)
                };
                MethodBase[] _newCalls = {
                         typeof(ChestExMenu).GetConstructor(AccessTools.all, null,
-                           new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ChestExMenu.behaviorOnItemSelect), typeof(string), typeof(ChestExMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) }, null),
+                           new Type[] { typeof(IList<Item>), typeof(Boolean), typeof(Boolean), typeof(InventoryMenu.highlightThisItem), typeof(ChestExMenu.behaviorOnItemSelect), typeof(String), typeof(ChestExMenu.behaviorOnItemSelect), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Item), typeof(Int32), typeof(System.Object) }, null),
                         typeof(ChestExMenu.behaviorOnItemSelect).GetConstructor(AccessTools.all, null,
                            new Type[] { typeof(Item), typeof(Farmer) }, null)
                };
@@ -147,10 +147,10 @@ namespace ChestEx {
             public static IEnumerable<CodeInstruction> OpenMenu_TranspilerPatches(IEnumerable<CodeInstruction> instructions) {
                MethodBase _orgCall =
                         typeof(ItemGrabMenu).GetConstructor(AccessTools.all, null,
-                           new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(string), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) }, null);
+                           new Type[] { typeof(IList<Item>), typeof(Boolean), typeof(Boolean), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(String), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Item), typeof(Int32), typeof(System.Object) }, null);
                MethodBase _newCall =
                         typeof(ChestExMenu).GetConstructor(AccessTools.all, null,
-                           new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ChestExMenu.behaviorOnItemSelect), typeof(string), typeof(ChestExMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) }, null);
+                           new Type[] { typeof(IList<Item>), typeof(Boolean), typeof(Boolean), typeof(InventoryMenu.highlightThisItem), typeof(ChestExMenu.behaviorOnItemSelect), typeof(String), typeof(ChestExMenu.behaviorOnItemSelect), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Item), typeof(Int32), typeof(System.Object) }, null);
 
                foreach (var instruction in instructions) {
                   if (instruction.opcode == OpCodes.Newobj) {
@@ -239,7 +239,7 @@ namespace ChestEx {
          }
          // Handle default .ctor call
          {
-            var ctor = typeof(ItemGrabMenu).GetConstructor(AccessTools.all, null, new Type[] { typeof(IList<Item>), typeof(object) }, null);
+            var ctor = typeof(ItemGrabMenu).GetConstructor(AccessTools.all, null, new Type[] { typeof(IList<Item>), typeof(System.Object) }, null);
             var patch = new HarmonyMethod(typeof(ChestExtensions.ItemGrabMenuArbitration.CtorPatches).GetMethod("TranspilerPatches"));
 
             harmony.Patch(ctor, null, null, patch);
