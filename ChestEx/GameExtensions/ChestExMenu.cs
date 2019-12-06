@@ -69,31 +69,18 @@ namespace ChestEx {
       private class DeepBaseCalls {
          public delegate void tEmergencyShutdown();
          public delegate void tPopulateClickableComponentList();
-         public delegate void tApplyMovementKey(Keys key);
          public delegate void tDrawMouse(SpriteBatch b);
-         public delegate void tExitThisMenu(Boolean playSound);
-         public delegate void tReceiveGamePadButton(Buttons b);
          public delegate void tUpdate(GameTime time);
-         public delegate void tMovePosition(Int32 dx, Int32 dy);
-         public delegate void tPerformHoverAction(Int32 x, Int32 y);
          public delegate void tDraw(SpriteBatch b, Boolean drawUpperPortion, Boolean drawDescriptionArea, Int32 red, Int32 green, Int32 blue);
-         public delegate void tReceiveLeftClick(Int32 x, Int32 y, Boolean playSound);
-         public delegate void tReceiveRightClick(Int32 x, Int32 y, Boolean playSound);
-         public delegate ClickableComponent tGetComponentWithID(Int32 id);
+         public delegate void tReceiveMouseClick(Int32 x, Int32 y, Boolean playSound);
 
          public tEmergencyShutdown pEmergencyShutDown;
          public tPopulateClickableComponentList pPopulateClickableComponentList;
-         public tApplyMovementKey pApplyMovementKey;
          public tDrawMouse pDrawMouse;
-         public tExitThisMenu pExitThisMenu;
-         public tReceiveGamePadButton pReceiveGamePadButton;
          public tUpdate pUpdate;
-         public tMovePosition pMovePosition;
-         public tPerformHoverAction pPerformHoverAction;
          public tDraw pDraw;
-         public tReceiveLeftClick pReceiveLeftClick;
-         public tReceiveRightClick pReceiveRightClick;
-         public tGetComponentWithID pGetComponentWithID;
+         public tReceiveMouseClick pReceiveLeftClick;
+         public tReceiveMouseClick pReceiveRightClick;
       }
 
       public static Int32 bgXDiff = 0;
@@ -166,68 +153,6 @@ namespace ChestEx {
          return this;
       }
 
-      protected override void customSnapBehavior(Int32 direction, Int32 oldRegion, Int32 oldID) {
-         if (direction == 2) {
-            for (Int32 i = 0; i < 12; i++) {
-               if (this.inventory != null && this.inventory.inventory != null && this.inventory.inventory.Count >= 12 && this.shippingBin) {
-                  this.inventory.inventory[i].upNeighborID = (this.shippingBin ? 12598 : (Math.Min(i, this.ItemsToGrabMenu.inventory.Count - 1) + 53910));
-               }
-            }
-            if (!this.shippingBin && oldID >= 53910) {
-               Int32 index = oldID - 53910;
-               if (index + 12 <= this.ItemsToGrabMenu.inventory.Count - 1) {
-                  this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(index + 12 + 53910);
-                  this.snapCursorToCurrentSnappedComponent();
-                  return;
-               }
-            }
-            this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID((oldRegion == 12598) ? 0 : ((oldID - 53910) % 12));
-            this.snapCursorToCurrentSnappedComponent();
-            return;
-         }
-         if (direction == 0) {
-            if (oldID < 53910 && oldID >= 12) {
-               this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(oldID - 12);
-               return;
-            }
-            Int32 id = oldID + 24;
-            Int32 j = 0;
-            while (j < 3 && this.ItemsToGrabMenu.inventory.Count <= id) {
-               id -= 12;
-               j++;
-            }
-            if (this.showReceivingMenu) {
-               if (id < 0) {
-                  if (this.ItemsToGrabMenu.inventory.Count > 0) {
-                     this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(53910 + this.ItemsToGrabMenu.inventory.Count - 1);
-                  } else if (this.discreteColorPickerCC != null) {
-                     this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(4343);
-                  }
-               } else {
-                  this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(id + 53910);
-               }
-            }
-            this.snapCursorToCurrentSnappedComponent();
-         }
-      }
-      public override void snapToDefaultClickableComponent() {
-         if (this.shippingBin) {
-            this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID(0);
-         } else {
-            this.currentlySnappedComponent = deepBaseCalls.pGetComponentWithID((this.ItemsToGrabMenu.inventory.Count > 0 && this.showReceivingMenu) ? 53910 : 0);
-         }
-         this.snapCursorToCurrentSnappedComponent();
-      }
-
-      public override void update(GameTime time) {
-         deepBaseCalls.pUpdate(time);
-         if (this.poof != null && this.poof.update(time)) {
-            this.poof = null;
-         }
-         if (this.chestColorPicker != null) {
-            this.chestColorPicker.update(time);
-         }
-      }
       public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) {
          if (this.ItemsToGrabMenu != null) {
             this.ItemsToGrabMenu.gameWindowSizeChanged(oldBounds, newBounds);
@@ -237,39 +162,6 @@ namespace ChestEx {
          }
          if (this.source == 1 && this.sourceItem != null && this.sourceItem is Chest) {
             setColorPicker();
-         }
-      }
-      public override void performHoverAction(Int32 x, Int32 y) {
-         this.hoveredItem = null;
-         this.hoverText = "";
-         deepBaseCalls.pPerformHoverAction(x, y);
-
-         if (this.colorPickerToggleButton != null) {
-            this.colorPickerToggleButton.tryHover(x, y, 0.25f);
-            if (this.colorPickerToggleButton.containsPoint(x, y))
-               this.hoverText = this.colorPickerToggleButton.hoverText;
-         }
-         if (this.organizeButton != null) {
-            this.organizeButton.tryHover(x, y, 0.1f);
-            if (this.organizeButton.containsPoint(x, y))
-               this.hoverText = this.organizeButton.hoverText;
-         }
-         if (this.fillStacksButton != null) {
-            this.fillStacksButton.tryHover(x, y, 0.25f);
-            if (this.fillStacksButton.containsPoint(x, y))
-               this.hoverText = this.fillStacksButton.hoverText;
-         }
-         if (this.showReceivingMenu) {
-            Item item_grab_hovered_item = this.ItemsToGrabMenu.hover(x, y, this.heldItem);
-            if (item_grab_hovered_item != null) {
-               this.hoveredItem = item_grab_hovered_item;
-            }
-         }
-         if (this.hoverText != null) {
-            return;
-         }
-         if (this.chestColorPicker != null) {
-            this.chestColorPicker.performHoverAction(x, y);
          }
       }
 
@@ -370,66 +262,6 @@ namespace ChestEx {
             this.behaviorFunction(this.heldItem, Game1.player);
             if (this.destroyItemOnClick) {
                this.heldItem = null;
-            }
-         }
-      }
-      public override void receiveKeyPress(Keys key) {
-         if (Game1.options.snappyMenus && Game1.options.gamepadControls)
-            deepBaseCalls.pApplyMovementKey(key);
-
-         if ((this.canExitOnKey || this.areAllItemsTaken()) && Game1.options.doesInputListContain(Game1.options.menuButton, key) && this.readyToClose()) {
-            deepBaseCalls.pExitThisMenu(true);
-            if (Game1.currentLocation.currentEvent != null) {
-               Event currentEvent = Game1.currentLocation.currentEvent;
-               Int32 currentCommand = currentEvent.CurrentCommand;
-               currentEvent.CurrentCommand = currentCommand + 1;
-            }
-         }
-         if (key == Keys.Delete && this.heldItem != null && this.heldItem.canBeTrashed()) {
-            if (this.heldItem is Object && Game1.player.specialItems.Contains((this.heldItem as Object).ParentSheetIndex)) {
-               Game1.player.specialItems.Remove((this.heldItem as Object).ParentSheetIndex);
-            }
-            this.heldItem = null;
-            Game1.playSound("trashcan");
-         }
-      }
-      public override void receiveGamePadButton(Buttons b) {
-         deepBaseCalls.pReceiveGamePadButton(b);
-         if (b == Buttons.Back && this.organizeButton != null) {
-            organizeItemsInList(Game1.player.Items);
-            Game1.playSound("Ship");
-         }
-         if (b == Buttons.RightShoulder) {
-            ClickableComponent fill_stacks_component = base.getComponentWithID(12952);
-            if (fill_stacks_component != null) {
-               this.setCurrentlySnappedComponentTo(fill_stacks_component.myID);
-               this.snapCursorToCurrentSnappedComponent();
-            } else {
-               Int32 highest_y = -1;
-               ClickableComponent highest_component = null;
-               foreach (ClickableComponent component in this.allClickableComponents) {
-                  if (component.region == 15923 && (highest_y == -1 || component.bounds.Y < highest_y)) {
-                     highest_y = component.bounds.Y;
-                     highest_component = component;
-                  }
-               }
-               if (highest_component != null) {
-                  this.setCurrentlySnappedComponentTo(highest_component.myID);
-                  this.snapCursorToCurrentSnappedComponent();
-               }
-            }
-         }
-         if (b == Buttons.LeftShoulder) {
-            ClickableComponent component2 = base.getComponentWithID(53910);
-            if (component2 != null) {
-               this.setCurrentlySnappedComponentTo(component2.myID);
-               this.snapCursorToCurrentSnappedComponent();
-               return;
-            }
-            component2 = base.getComponentWithID(0);
-            if (component2 != null) {
-               this.setCurrentlySnappedComponentTo(0);
-               this.snapCursorToCurrentSnappedComponent();
             }
          }
       }
@@ -561,17 +393,11 @@ namespace ChestEx {
          {
             deepBaseCalls.pEmergencyShutDown = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tEmergencyShutdown>(this, "emergencyShutDown");
             deepBaseCalls.pPopulateClickableComponentList = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tPopulateClickableComponentList>(this, "populateClickableComponentList");
-            deepBaseCalls.pApplyMovementKey = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tApplyMovementKey>(this, "applyMovementKey", new Type[] { typeof(Keys) });
             deepBaseCalls.pDrawMouse = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tDrawMouse>(this, "drawMouse", new Type[] { typeof(SpriteBatch) });
-            deepBaseCalls.pExitThisMenu = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tExitThisMenu>(this, "exitThisMenu", new Type[] { typeof(Boolean) });
-            deepBaseCalls.pReceiveGamePadButton = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveGamePadButton>(this, "receiveGamePadButton", new Type[] { typeof(Buttons) });
             deepBaseCalls.pUpdate = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tUpdate>(this, "update", new Type[] { typeof(GameTime) });
-            deepBaseCalls.pMovePosition = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tMovePosition>(this, "movePosition", new Type[] { typeof(Int32), typeof(Int32) });
-            deepBaseCalls.pPerformHoverAction = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tPerformHoverAction>(this, "performHoverAction", new Type[] { typeof(Int32), typeof(Int32) });
             deepBaseCalls.pDraw = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tDraw>(this, "draw", new Type[] { typeof(SpriteBatch), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Int32), typeof(Int32) });
-            deepBaseCalls.pReceiveLeftClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveLeftClick>(this, "receiveLeftClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
-            deepBaseCalls.pReceiveRightClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveRightClick>(this, "receiveRightClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
-            deepBaseCalls.pGetComponentWithID = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tGetComponentWithID>(this, "getComponentWithID", new Type[] { typeof(Int32) });
+            deepBaseCalls.pReceiveLeftClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveMouseClick>(this, "receiveLeftClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
+            deepBaseCalls.pReceiveRightClick = DeepBaseCallsGetter.GetDeepBaseFunction<DeepBaseCalls.tReceiveMouseClick>(this, "receiveRightClick", new Type[] { typeof(Int32), typeof(Int32), typeof(Boolean) });
          }
          // calc bgXDiff
          {
@@ -617,25 +443,10 @@ namespace ChestEx {
             setOrganizeButton();
          }
          if (Game1.options.snappyMenus && Game1.options.gamepadControls) {
-            for (Int32 k = 0; k < 12; k++) {
-               if (this.inventory != null && this.inventory.inventory != null && this.inventory.inventory.Count >= 12) {
-                  this.inventory.inventory[k].upNeighborID = (this.shippingBin ? 12598 : ((this.discreteColorPickerCC != null && this.ItemsToGrabMenu != null && this.ItemsToGrabMenu.inventory.Count <= k) ? 4343 : ((this.ItemsToGrabMenu.inventory.Count > k) ? (53910 + k) : 53910)));
-               }
-               if (this.discreteColorPickerCC != null && this.ItemsToGrabMenu != null && this.ItemsToGrabMenu.inventory.Count > k) {
-                  this.ItemsToGrabMenu.inventory[k].upNeighborID = 4343;
-               }
-            }
-            for (Int32 l = 0; l < Config.instance.getCapacity(); l++) {
-               if (this.inventory != null && this.inventory.inventory != null && this.inventory.inventory.Count > l) {
-                  this.inventory.inventory[l].upNeighborID = -7777;
-                  this.inventory.inventory[l].upNeighborImmutable = true;
-               }
-            }
             if (this.okButton != null) {
                this.okButton.leftNeighborID = 11;
             }
             deepBaseCalls.pPopulateClickableComponentList();
-            this.snapToDefaultClickableComponent();
          }
       }
    }
