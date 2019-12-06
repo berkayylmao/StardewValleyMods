@@ -287,6 +287,7 @@ namespace ChestEx {
                Game1.playSound("drumkit6");
             } catch (Exception) {
             }
+            return;
          }
          if (this.heldItem == null && this.showReceivingMenu) {
             this.heldItem = this.ItemsToGrabMenu.leftClick(x, y, this.heldItem, false);
@@ -302,8 +303,9 @@ namespace ChestEx {
             if (Game1.player.addItemToInventoryBool(this.heldItem, false)) {
                this.heldItem = null;
                Game1.playSound("coin");
+               return;
             }
-         } else if ((this.reverseGrab || this.behaviorFunction != null) && this.isWithinBounds(x, y)) {
+         } else if (this.reverseGrab || this.behaviorFunction != null) {
             this.behaviorFunction(this.heldItem, Game1.player);
             if (Game1.activeClickableMenu != null && Game1.activeClickableMenu is ChestExMenu) {
                if (Game1.options.SnappyMenus) {
@@ -343,9 +345,6 @@ namespace ChestEx {
             this.FillOutStacks();
             Game1.playSound("Ship");
             return;
-         }
-         if (this.heldItem != null && !this.isWithinBounds(x, y) && this.heldItem.canBeTrashed()) {
-            this.DropHeldItem();
          }
       }
       public override void receiveRightClick(Int32 x, Int32 y, Boolean playSound = true) {
