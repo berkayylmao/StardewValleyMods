@@ -39,6 +39,7 @@ using StardewValley.Objects;
 
 namespace ChestEx {
    public class Main : Mod {
+      public const String strAutomateUID = "Pathoschild.Automate";
       public const String strChestsAnywhereUID = "Pathoschild.ChestsAnywhere";
 
       public static class ChestExtensions {
@@ -131,7 +132,7 @@ namespace ChestEx {
             public static IEnumerable<CodeInstruction> TranspilerPatches(IEnumerable<CodeInstruction> instructions) {
                foreach (var instruction in instructions) {
                   if (instruction.opcode == OpCodes.Ldc_I4_S
-                      && (SByte)instruction.operand == 36) {
+                      && (SByte)instruction.operand == Chest.capacity) {
                      yield return new CodeInstruction(OpCodes.Ldc_I4, Math.Min(Int32.MaxValue, Config.instance.getCapacity()));
                      continue;
                   }
@@ -245,6 +246,12 @@ namespace ChestEx {
             harmony.Patch(ctor, null, null, patch);
          }
 
+         if (helper.ModRegistry.IsLoaded(strAutomateUID)) {
+            this.Monitor.Log("Automate is found, installing dynamic compatibility patches...", LogLevel.Info);
+            this.Monitor.Log($"Automate version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.14.0 (Release) as base.", LogLevel.Debug);
+            var typeAutomate_ChestContainer = Type.GetType("Pathoschild.Stardew.Automate.Framework.Storage.ChestContainer, Automate");
+            harmony.Patch(AccessTools.Method(typeAutomate_ChestContainer, "Store"), null, null, new HarmonyMethod(typeof(ChestExtensions.CapacityRaiser).GetMethod("TranspilerPatches")));
+         }
          if (helper.ModRegistry.IsLoaded(strChestsAnywhereUID)) {
             this.Monitor.Log("ChestsAnywhere is found, installing dynamic compatibility patches...", LogLevel.Info);
             this.Monitor.Log($"ChestsAnywhere version: {helper.ModRegistry.Get(strChestsAnywhereUID).Manifest.Version}, dynamic compability patch is made with v1.17.1 (Release) as base.", LogLevel.Debug);
