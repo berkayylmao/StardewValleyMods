@@ -102,31 +102,31 @@ namespace ChestEx {
                                                         sourceItem as Chest);
 
          this.colorPickerToggleButton = new ClickableTextureComponent(
-             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.yPositionOnScreen - IClickableMenu.borderWidth, 64, 64),
+             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.ItemsToGrabMenu.yPositionOnScreen, 64, 64),
              Game1.mouseCursors,
              new Rectangle(119, 469, 16, 16),
              4f,
              false) {
             hoverText = Game1.content.LoadString("Strings\\UI:Toggle_ColorPicker"),
-            myID = 27346,
-            downNeighborID = 12952,
-            leftNeighborID = 53921,
-            region = 15923
+            myID = ItemGrabMenu.region_colorPickToggle,
+            downNeighborID = ItemGrabMenu.region_fillStacksButton,
+            leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
+            region = ItemGrabMenu.region_organizationButtons
          };
       }
       private void setOrganizeButton() {
          this.fillStacksButton = new ClickableTextureComponent(
-             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.yPositionOnScreen - IClickableMenu.borderWidth + 64 + 16, 64, 64),
+             new Rectangle(this.inventory.xPositionOnScreen + this.inventory.width - bgXDiff + 60, this.ItemsToGrabMenu.yPositionOnScreen + (this.colorPickerToggleButton != null ? 64 + 16 : 0), 64, 64),
              Game1.mouseCursors,
              new Rectangle(103, 469, 16, 16),
              4f,
              false) {
             hoverText = Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"),
-            myID = 12952,
+            myID = ItemGrabMenu.region_fillStacksButton,
             upNeighborID = (this.colorPickerToggleButton != null) ? this.colorPickerToggleButton.myID : -500,
-            downNeighborID = 106,
-            leftNeighborID = 53921,
-            region = 15923
+            downNeighborID = ItemGrabMenu.region_organizeButton,
+            leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
+            region = ItemGrabMenu.region_organizationButtons
          };
          this.organizeButton = new ClickableTextureComponent(
              new Rectangle(this.fillStacksButton.bounds.X, this.fillStacksButton.bounds.Y + 64 + 16, 64, 64),
@@ -135,53 +135,42 @@ namespace ChestEx {
              4f,
              false) {
             hoverText = Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"),
-            myID = 106,
-            upNeighborID = this.fillStacksButton.myID,
-            downNeighborID = 5948,
-            leftNeighborID = 53921,
-            region = 15923
+            myID = ItemGrabMenu.region_organizeButton,
+            upNeighborID = ItemGrabMenu.region_fillStacksButton,
+            downNeighborID = MenuWithInventory.region_trashCan,
+            leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
+            region = ItemGrabMenu.region_organizationButtons
          };
          this.trashCan = new ClickableTextureComponent(
              new Rectangle(this.organizeButton.bounds.X, this.organizeButton.bounds.Y + 64 + 64 + 16, 64, 104),
              Game1.mouseCursors,
-             new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26),
+             new Rectangle(564 + (Game1.player.trashCanLevel * 18), 102, 18, 26),
              4f,
              false) {
-            myID = 5948,
-            upNeighborID = this.organizeButton.myID,
-            downNeighborID = this.okButton != null ? this.okButton.myID : 4857,
-            leftNeighborID = 53921,
-            region = 15923
+            myID = MenuWithInventory.region_trashCan,
+            upNeighborID = ItemGrabMenu.region_organizeButton,
+            downNeighborID = MenuWithInventory.region_okButton,
+            leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
+            region = ItemGrabMenu.region_organizationButtons
          };
-         this.okButton.upNeighborID = this.trashCan.myID;
          this.okButton.bounds.Y += bgYDiff;
       }
       public new void SetupBorderNeighbors() {
          List<ClickableComponent> border = this.inventory.GetBorder(InventoryMenu.BorderSide.Right);
          foreach (ClickableComponent clickableComponent in border) {
-            clickableComponent.rightNeighborID = -99998;
+            clickableComponent.rightNeighborID = ClickableComponent.SNAP_AUTOMATIC;
             clickableComponent.rightNeighborImmutable = true;
          }
          border = this.inventory.GetBorder(InventoryMenu.BorderSide.Top);
          foreach (ClickableComponent slot in border) {
-            slot.upNeighborID = -7777;
+            slot.upNeighborID = ClickableComponent.CUSTOM_SNAP_BEHAVIOR;
             slot.upNeighborImmutable = true;
          }
 
          border = this.ItemsToGrabMenu.GetBorder(InventoryMenu.BorderSide.Right);
          foreach (ClickableComponent slot in border) {
-            slot.rightNeighborID = -99998;
+            slot.rightNeighborID = ClickableComponent.SNAP_AUTOMATIC;
             slot.rightNeighborImmutable = true;
-         }
-         border = this.ItemsToGrabMenu.GetBorder(InventoryMenu.BorderSide.Top);
-         foreach (ClickableComponent slot in border) {
-            slot.upNeighborID = 4343;
-            slot.upNeighborImmutable = true;
-         }
-         border = this.ItemsToGrabMenu.GetBorder(InventoryMenu.BorderSide.Bottom);
-         foreach (ClickableComponent slot in border) {
-            slot.downNeighborID = 11;
-            slot.downNeighborImmutable = true;
          }
       }
 
@@ -189,20 +178,54 @@ namespace ChestEx {
          Game1.options.snappyMenus = this.defSnappyMenus;
       }
       public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) {
-         if (this.ItemsToGrabMenu != null) {
+         if (this.ItemsToGrabMenu != null)
             this.ItemsToGrabMenu.gameWindowSizeChanged(oldBounds, newBounds);
-         }
-         if (this.organizeButton != null) {
+
+         if (this.organizeButton != null)
             setOrganizeButton();
-         }
-         if (this.source == 1 && this.sourceItem != null && this.sourceItem is Chest) {
+
+         if (this.source == ItemGrabMenu.source_chest && this.sourceItem != null && this.sourceItem is Chest)
             setColorPicker();
-         }
       }
 
+      protected override void customSnapBehavior(Int32 direction, Int32 oldRegion, Int32 oldID) {
+         if (direction == 2) {
+            if (oldID >= ItemGrabMenu.region_itemsToGrabMenuModifier) {
+               Int32 index = oldID - ItemGrabMenu.region_itemsToGrabMenuModifier;
+               if (index + Config.instance.columns <= this.ItemsToGrabMenu.inventory.Count - 1) {
+                  this.currentlySnappedComponent = base.getComponentWithID(index + Config.instance.columns + ItemGrabMenu.region_itemsToGrabMenuModifier);
+                  this.snapCursorToCurrentSnappedComponent();
+                  return;
+               }
+            }
+            this.currentlySnappedComponent = base.getComponentWithID((oldID - ItemGrabMenu.region_itemsToGrabMenuModifier) % Config.instance.columns);
+            this.snapCursorToCurrentSnappedComponent();
+            return;
+         }
+         if (direction == 0) {
+            if (oldID < ItemGrabMenu.region_itemsToGrabMenuModifier && oldID >= Config.instance.columns) {
+               this.currentlySnappedComponent = base.getComponentWithID(oldID - Config.instance.columns);
+               return;
+            }
+            Int32 id = oldID + (Config.instance.columns * (Config.instance.rows - 1));
+            for (Int32 j = 0; j < Config.instance.rows && this.ItemsToGrabMenu.inventory.Count <= id; j++) {
+               id -= Config.instance.columns;
+            }
+            if (this.showReceivingMenu) {
+               if (id < 0) {
+                  if (this.ItemsToGrabMenu.inventory.Count > 0) {
+                     this.currentlySnappedComponent = base.getComponentWithID(ItemGrabMenu.region_itemsToGrabMenuModifier + this.ItemsToGrabMenu.inventory.Count - 1);
+                  }
+               } else {
+                  this.currentlySnappedComponent = base.getComponentWithID(id + ItemGrabMenu.region_itemsToGrabMenuModifier);
+               }
+            }
+            this.snapCursorToCurrentSnappedComponent();
+         }
+      }
       public override void receiveLeftClick(Int32 x, Int32 y, Boolean playSound = true) {
          deepBaseCalls.pReceiveLeftClick(x, y, !this.destroyItemOnClick);
-         if (this.chestColorPicker != null && this.chestColorPicker.isWithinBounds(x, y) && this.chestColorPicker.visible) {
+         if (this.chestColorPicker != null && this.chestColorPicker.visible && this.chestColorPicker.isWithinBounds(x, y)) {
             this.chestColorPicker.receiveLeftClick(x, y, true);
             return;
          }
@@ -223,6 +246,7 @@ namespace ChestEx {
             if (this.heldItem != null && this.behaviorOnItemGrab != null) {
                this.behaviorOnItemGrab(this.heldItem, Game1.player);
                if (Game1.activeClickableMenu != null && Game1.activeClickableMenu is ChestExMenu) {
+                  (Game1.activeClickableMenu as ChestExMenu).setSourceItem(this.sourceItem);
                   if (Game1.options.SnappyMenus) {
                      (Game1.activeClickableMenu as ChestExMenu).currentlySnappedComponent = this.currentlySnappedComponent;
                      (Game1.activeClickableMenu as ChestExMenu).snapCursorToCurrentSnappedComponent();
@@ -237,6 +261,7 @@ namespace ChestEx {
          } else if (this.reverseGrab || this.behaviorFunction != null) {
             this.behaviorFunction(this.heldItem, Game1.player);
             if (Game1.activeClickableMenu != null && Game1.activeClickableMenu is ChestExMenu) {
+               (Game1.activeClickableMenu as ChestExMenu).setSourceItem(this.sourceItem);
                if (Game1.options.SnappyMenus) {
                   (Game1.activeClickableMenu as ChestExMenu).currentlySnappedComponent = this.currentlySnappedComponent;
                   (Game1.activeClickableMenu as ChestExMenu).snapCursorToCurrentSnappedComponent();
@@ -453,6 +478,15 @@ namespace ChestEx {
          this.essential = essential;
          return this;
       }
+      public new void setSourceItem(Item item) {
+         this.sourceItem = item;
+         this.chestColorPicker = null;
+         this.colorPickerToggleButton = null;
+
+         if (this.source == ItemGrabMenu.source_chest && this.sourceItem != null && this.sourceItem is Chest)
+            setColorPicker();
+
+      }
 
       public ChestExMenu(IList<Item> inventory, Boolean reverseGrab, Boolean showReceivingMenu, InventoryMenu.highlightThisItem highlightFunction, behaviorOnItemSelect behaviorOnItemSelectFunction, String message, behaviorOnItemSelect behaviorOnItemGrab = null, Boolean snapToBottom = false, Boolean canBeExitedWithKey = false, Boolean playRightClickSound = true, Boolean allowRightClick = true, Boolean showOrganizeButton = false, Int32 source = 0, Item sourceItem = null, Int32 whichSpecialButton = -1, System.Object context = null)
           : base(null, new ArbitrationObjects(highlightFunction, true, false, 0, bgYDiff)) {
@@ -497,35 +531,33 @@ namespace ChestEx {
                                      this.inventory.yPositionOnScreen + 16 - (64 * Config.instance.rows) - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder,
                                      false, inventory, null, Config.instance.getCapacity(), Config.instance.rows, 0, 0, true);
          this.ItemsToGrabMenu.populateClickableComponentList();
-         for (Int32 i = 0; i < this.ItemsToGrabMenu.inventory.Count; i++) {
+         for (int i = 0; i < this.ItemsToGrabMenu.inventory.Count; i++) {
             if (this.ItemsToGrabMenu.inventory[i] != null) {
-               this.ItemsToGrabMenu.inventory[i].myID += 53910;
-               this.ItemsToGrabMenu.inventory[i].upNeighborID += 53910;
-               this.ItemsToGrabMenu.inventory[i].rightNeighborID += 53910;
-               this.ItemsToGrabMenu.inventory[i].downNeighborID += 53910;
-               this.ItemsToGrabMenu.inventory[i].leftNeighborID += 53910;
-               this.ItemsToGrabMenu.inventory[i].fullyImmutable = true;
+               this.ItemsToGrabMenu.inventory[i].myID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+               this.ItemsToGrabMenu.inventory[i].upNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+               this.ItemsToGrabMenu.inventory[i].rightNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+               this.ItemsToGrabMenu.inventory[i].downNeighborID = ClickableComponent.CUSTOM_SNAP_BEHAVIOR;
+               this.ItemsToGrabMenu.inventory[i].leftNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
             }
          }
 
-         if (source == 1 && sourceItem != null && sourceItem is Chest) {
+         if (source == ItemGrabMenu.source_chest && sourceItem != null && sourceItem is Chest) {
             setColorPicker();
             this.chestColorPicker.visible = Game1.player.showChestColorPicker = false;
             this.defSnappyMenus = Game1.options.snappyMenus;
          }
-         if (showOrganizeButton) {
+         if (showOrganizeButton)
             setOrganizeButton();
-         }
 
-         if (this.trashCan != null && this.inventory.inventory.Count >= 12 && this.inventory.inventory[11] != null) {
+         if (this.trashCan != null && this.inventory.inventory.Count >= 12 && this.inventory.inventory[11] != null)
             this.inventory.inventory[11].rightNeighborID = this.trashCan.myID;
-         }
-         if (this.okButton != null) {
+
+         if (this.okButton != null)
             this.okButton.leftNeighborID = 11;
-         }
 
          deepBaseCalls.pPopulateClickableComponentList();
-         this.snapToDefaultClickableComponent();
+         if (Game1.options.SnappyMenus)
+            this.snapToDefaultClickableComponent();
          SetupBorderNeighbors();
       }
    }
