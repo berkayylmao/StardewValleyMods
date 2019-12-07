@@ -1,13 +1,17 @@
 ﻿{
   "Name": "ChestEx",
   "Author": "Berkay Yigit (berkayylmao)",
-  "Version": "1.2.0-beta",
+  "Version": "1.2.1",
   "Description": "Increase the capacity of your chests/fridge, today!",
   "UniqueID": "berkayylmao.ChestEx",
   "EntryDll": "ChestEx.dll",
   "MinimumApiVersion": "3.0.0",
   "UpdateKeys": [ "Nexus:4180" ],
   "Dependencies": [
+     {
+        "UniqueID": "Pathoschild.Automate",
+        "IsRequired": false
+     },
      {
         "UniqueID": "Pathoschild.ChestsAnywhere",
         "IsRequired": false
