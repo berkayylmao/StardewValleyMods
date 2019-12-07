@@ -28,13 +28,10 @@ using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Objects;
-
-using Object = StardewValley.Object;
 
 namespace ChestEx {
    public class ChestExMenu : ItemGrabMenu {
