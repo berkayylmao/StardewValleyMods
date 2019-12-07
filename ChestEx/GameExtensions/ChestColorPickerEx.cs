@@ -105,47 +105,39 @@ namespace ChestEx {
          this.canvasTextureUpdated = true;
       }
 
-      public override void performHoverAction(Int32 x, Int32 y) {
-         if (!this.visible)
-            return;
+      private Microsoft.Xna.Framework.Color getColorAtPixel(Int32 x, Int32 y) {
+         Microsoft.Xna.Framework.Color c = chestColor;
+         if (this.canvasTexture == null)
+            return c;
 
          x -= this.xPositionOnScreen;
          y -= this.yPositionOnScreen;
          if ((x >= 0 && x < this.canvasTexture.Width) &&
             (y >= 0 && y < this.canvasTexture.Height)) {
-            var c = this.canvas.GetPixel(x, y);
-            if (c == Color.Black) // changes the color to the default brown color
-               return;
-
-            this.dummyChest.playerChoiceColor.Value = new Microsoft.Xna.Framework.Color(c.R, c.G, c.B);
-            this.dummyChest.resetLidFrame();
-         } else {
-            this.dummyChest.playerChoiceColor.Value = chestColor;
-            this.dummyChest.resetLidFrame();
+            var winColor = this.canvas.GetPixel(x, y);
+            if (winColor.R <= 3 && winColor.G <= 3 && winColor.B <= 3) // block default chest color
+               return c;
+            else
+               return new Microsoft.Xna.Framework.Color(winColor.R, winColor.G, winColor.B);
          }
+
+         return c;
       }
-      public override void update(Microsoft.Xna.Framework.GameTime time) {
-         base.update(time);
+      public override void performHoverAction(Int32 x, Int32 y) {
+         if (!this.visible)
+            return;
+
+         this.dummyChest.playerChoiceColor.Value = getColorAtPixel(x, y);
+         this.dummyChest.resetLidFrame();
       }
 
       public override void receiveLeftClick(Int32 x, Int32 y, Boolean playSound = true) {
          if (!this.visible)
             return;
          base.receiveLeftClick(x, y, playSound);
-         x -= this.xPositionOnScreen;
-         y -= this.yPositionOnScreen;
-         if ((x >= 0 && x < this.canvasTexture.Width) &&
-            (y >= 0 && y < this.canvasTexture.Height)) {
-            var c = this.canvas.GetPixel(x, y);
-            if (c == Color.Black) // changes the color to the default brown color
-               return;
 
-            this.chestColor = new Microsoft.Xna.Framework.Color(c.R, c.G, c.B);
-
-            this.actualChest.playerChoiceColor.Value = chestColor;
-            this.dummyChest.playerChoiceColor.Value = chestColor;
-            this.dummyChest.resetLidFrame();
-         }
+         this.actualChest.playerChoiceColor.Value = this.dummyChest.playerChoiceColor.Value = chestColor = getColorAtPixel(x, y);
+         this.dummyChest.resetLidFrame();
       }
 
       public override void gameWindowSizeChanged(Microsoft.Xna.Framework.Rectangle oldBounds, Microsoft.Xna.Framework.Rectangle newBounds) {
