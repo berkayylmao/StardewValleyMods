@@ -202,7 +202,7 @@ namespace ChestEx {
 
       public override void receiveLeftClick(Int32 x, Int32 y, Boolean playSound = true) {
          deepBaseCalls.pReceiveLeftClick(x, y, !this.destroyItemOnClick);
-         if (this.chestColorPicker != null && this.chestColorPicker.isWithinBounds(x, y)) {
+         if (this.chestColorPicker != null && this.chestColorPicker.isWithinBounds(x, y) && this.chestColorPicker.visible) {
             this.chestColorPicker.receiveLeftClick(x, y, true);
             return;
          }
