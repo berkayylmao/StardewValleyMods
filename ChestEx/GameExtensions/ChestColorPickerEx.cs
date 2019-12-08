@@ -27,6 +27,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -57,16 +58,16 @@ namespace ChestEx {
          }
          this.graphics = Graphics.FromImage(this.canvas);
 
-         var blend = new ColorBlend {
-            Positions = new[] { 0f, 1 / 4f, 2 / 4f, 3 / 4f, 1f },
-            Colors = new[] { Color.Red, Color.Orange, Color.Green, Color.Cyan, Color.Blue }
-         };
-
          if (this.spectrumGradient != null) {
             this.spectrumGradient.Dispose();
             this.spectrumGradient = null;
          }
-         this.spectrumGradient = new LinearGradientBrush(new RectangleF(0f, 0f, this.width, this.height), Color.White, Color.White, 0f) {
+         var blend = new ColorBlend {
+            Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Lime, Color.Cyan, Color.Blue, Color.Indigo, Color.Violet, },
+            Positions = new Single[] { 0f, 1 / 7f, 2 / 7f, 3 / 7f, 4 / 7f, 5 / 7f, 6 / 7f, 1f }
+         };
+
+         this.spectrumGradient = new LinearGradientBrush(new RectangleF(0f, 0f, this.width, this.height), Color.Transparent, Color.Transparent, 0f) {
             InterpolationColors = blend
          };
 
@@ -85,7 +86,7 @@ namespace ChestEx {
       private void drawPicker() {
          this.graphics.FillRectangle(this.spectrumGradient, 0f, 0f, this.width, this.height);
          this.graphics.FillRectangle(this.darkMixGradient, 0f, 0f, this.width, this.height * 0.3f);
-         this.graphics.FillRectangle(this.lightMixGradient, 0f, this.height * 0.7f + 1f /* just some glitch */, this.width, this.height * 0.3f);
+         this.graphics.FillRectangle(this.lightMixGradient, 0f, (this.height * 0.7f) + 1f /* just some glitch */, this.width, this.height * 0.3f);
 
          this.canvasTextureUpdated = false;
       }
@@ -94,15 +95,13 @@ namespace ChestEx {
             this.canvasTexture.Dispose();
             this.canvasTexture = null;
          }
-         this.canvasTexture = new Microsoft.Xna.Framework.Graphics.Texture2D(device, this.canvas.Width, this.canvas.Height, false, Microsoft.Xna.Framework.Graphics.SurfaceFormat.Color);
-         BitmapData bits = this.canvas.LockBits(new Rectangle(0, 0, this.canvas.Width, this.canvas.Height), ImageLockMode.ReadOnly, this.canvas.PixelFormat);
-         var bytes = new Byte[bits.Height * bits.Stride];
-
-         System.Runtime.InteropServices.Marshal.Copy(bits.Scan0, bytes, 0, bytes.Length);
-         this.canvasTexture.SetData(bytes);
-
-         this.canvas.UnlockBits(bits);
+         using (MemoryStream s = new MemoryStream()) {
+            this.canvas.Save(s, System.Drawing.Imaging.ImageFormat.Png);
+            s.Seek(0, SeekOrigin.Begin);
+            this.canvasTexture = Microsoft.Xna.Framework.Graphics.Texture2D.FromStream(device, s);
+         }
          this.canvasTextureUpdated = true;
+
       }
 
       private Microsoft.Xna.Framework.Color getColorAtPixel(Int32 x, Int32 y) {
@@ -153,15 +152,15 @@ namespace ChestEx {
                this.convertPickerToTexture2D(b.GraphicsDevice);
 
             Game1.drawDialogueBox(
-               this.xPositionOnScreen - IClickableMenu.borderWidth * 2 - IClickableMenu.spaceToClearSideBorder * 2 - 32,
-               this.yPositionOnScreen - 134,
+               this.xPositionOnScreen - 128,
+               this.yPositionOnScreen - 96,
                64 + 64,
                92 + 128,
                false, true, null, false, true, 60, 50, 40);
 
             this.dummyChest.draw(b,
-               this.xPositionOnScreen - IClickableMenu.borderWidth * 2 - IClickableMenu.spaceToClearSideBorder * 2,
-               this.yPositionOnScreen,
+               this.xPositionOnScreen - 128 - 6 + IClickableMenu.borderWidth,
+               this.yPositionOnScreen - 4 + IClickableMenu.borderWidth,
                1f, true);
 
             Game1.drawDialogueBox(
@@ -171,8 +170,7 @@ namespace ChestEx {
                this.height + 128,
                false, true, null, false, true, 60, 50, 40);
 
-            b.Draw(this.canvasTexture, new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen, this.yPositionOnScreen, canvasTexture.Width, canvasTexture.Height),
-               null, Microsoft.Xna.Framework.Color.White, 0f, Microsoft.Xna.Framework.Vector2.Zero, Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally, 0f);
+            b.Draw(this.canvasTexture, new Microsoft.Xna.Framework.Vector2(this.xPositionOnScreen, this.yPositionOnScreen), Microsoft.Xna.Framework.Color.White);
          }
       }
 
