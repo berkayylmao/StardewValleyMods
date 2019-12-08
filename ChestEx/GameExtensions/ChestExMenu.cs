@@ -203,8 +203,8 @@ namespace ChestEx {
             return;
          }
          if (direction == 0) {
-            if (oldID < ItemGrabMenu.region_itemsToGrabMenuModifier && oldID >= Config.instance.columns) {
-               this.currentlySnappedComponent = base.getComponentWithID(oldID - Config.instance.columns);
+            if (oldID < ItemGrabMenu.region_itemsToGrabMenuModifier && oldID >= 12) {
+               this.currentlySnappedComponent = base.getComponentWithID(oldID - 12);
                return;
             }
             Int32 id = oldID + (Config.instance.columns * (Config.instance.rows - 1));
