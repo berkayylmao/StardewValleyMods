@@ -1,7 +1,7 @@
 ﻿/*
    MIT License
 
-   Copyright (c) 2019 Berkay Yigit <berkay2578@gmail.com>
+   Copyright (c) 2020 Berkay Yigit <berkaytgy@gmail.com>
        Copyright holder detail: Nickname(s) used by the copyright holder: 'berkay2578', 'berkayylmao'.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,11 +30,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ChestEx")]
-[assembly: AssemblyDescription("Increase the capacity of your chests/fridge, today!")]
+[assembly: AssemblyDescription("A custom implementation of the chest menu.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © berkay(2578)")]
+[assembly: AssemblyCopyright("Copyright (C) 2020 Berkay Yigit <berkaytgy@gmail.com>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -56,5 +56,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.4.0")]
-[assembly: AssemblyFileVersion("1.3.4.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

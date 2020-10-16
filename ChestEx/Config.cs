@@ -1,7 +1,7 @@
 ﻿/*
    MIT License
 
-   Copyright (c) 2019 Berkay Yigit <berkay2578@gmail.com>
+   Copyright (c) 2020 Berkay Yigit <berkaytgy@gmail.com>
        Copyright holder detail: Nickname(s) used by the copyright holder: 'berkay2578', 'berkayylmao'.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,9 +29,7 @@ namespace ChestEx {
    public class Config {
       public static Config instance;
 
-      public String rows_Description { get; set; } = "The amount of rows that the chest menu will have:";
       public Int32 rows { get; set; } = 3;
-      public String columns_Description { get; set; } = "The amount of columns that the chest menu will have:";
       public Int32 columns { get; set; } = 12;
 
       public Int32 getCapacity() => rows * columns;

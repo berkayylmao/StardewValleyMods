@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+
+using ChestEx.LanguageExtensions;
+using ChestEx.Types.BaseTypes;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+using StardewValley.Objects;
+
+namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
+   public partial class ChestColouringPanel : BaseTypes.ICustomItemGrabMenuItem {
+      // Private:
+
+      private ColourPalette _colourPalette;
+
+      private Boolean _isShowingColourEditors;
+
+      private ChestAsOpenPanelButton _panelButton;
+
+      // Component event handlers:
+      #region Component event handlers
+
+      private void _componentOnClick(Object sender, ICustomMenu.MouseStateEx mouseState) {
+         switch ((sender as BaseTypes.ICustomItemGrabMenuItem.BasicComponent).Name) {
+            case "openPanelBTN":
+               _isShowingColourEditors.Flip();
+               _colourPalette.SetVisible(_isShowingColourEditors);
+               this.HostMenu.SourceInventoryOptions.SetVisible(!_isShowingColourEditors);
+               break;
+            case "palette":
+               var pos_as_point = mouseState.Pos.AsXNAPoint();
+               this.HostMenu.GetSourceAs<Chest>().playerChoiceColor.Value = _colourPalette.GetColourAt(pos_as_point.X, pos_as_point.Y);
+               break;
+         }
+      }
+
+      #endregion
+
+      // Public:
+
+      // Overrides:
+
+      public override void Draw(SpriteBatch b) {
+         if (!this.IsVisible)
+            return;
+
+         if (_isShowingColourEditors) {
+            var wrap_rectangle_ItemsToGrabMenu = this.HostMenu.ItemsToGrabMenu.GetRectangleForDialogueBox();
+            StardewValley.Game1.drawDialogueBox(
+               wrap_rectangle_ItemsToGrabMenu.X, wrap_rectangle_ItemsToGrabMenu.Y,
+               wrap_rectangle_ItemsToGrabMenu.Width, wrap_rectangle_ItemsToGrabMenu.Height,
+               false, true,
+               r: this.ActionColours.BackgroundColour.R,
+               g: this.ActionColours.BackgroundColour.G,
+               b: this.ActionColours.BackgroundColour.B);
+         }
+
+         base.Draw(b);
+      }
+
+      // Constructors:
+
+      public ChestColouringPanel(BaseTypes.ICustomItemGrabMenu hostMenu) : base(hostMenu, GlobalVars.GameViewport, true, BaseTypes.IActionColours.Default) {
+         _isShowingColourEditors = false;
+         /*
+          * 
+          * 
+            game_viewport.Width - this.ItemsToGrabMenu.width - Convert.ToInt32(game_viewport.Width / (12 * StardewValley.Game1.options.zoomLevel)),
+            game_viewport.Height / Convert.ToInt32(8 * StardewValley.Game1.options.zoomLevel),
+          * 
+          * */
+
+         var source_menu_bounds = this.HostMenu.SourceInventoryOptions.Bounds;
+         var player_menu_bounds = this.HostMenu.PlayerInventoryOptions.Bounds;
+         var menu_chest_size = new Point(
+            source_menu_bounds.Width / Convert.ToInt32(5.83f * StardewValley.Game1.options.zoomLevel),
+            source_menu_bounds.Width / Convert.ToInt32(2.91f * StardewValley.Game1.options.zoomLevel) // using 'width' here since Chest.height is basically Chest.width * 2
+            );
+
+         _panelButton = new ChestAsOpenPanelButton(this,
+            new Rectangle(
+               (source_menu_bounds.X / 2) - (menu_chest_size.X / 2),
+               (this.Bounds.Height / 2) - Convert.ToInt32(menu_chest_size.Y / 1.85f),
+               menu_chest_size.X,
+               menu_chest_size.Y),
+            "openPanelBTN", _componentOnClick, "Configure this chest", BaseTypes.IActionColours.TurnSlightlyTranslucentOnAction);
+
+         _colourPalette = new ColourPalette(this, this.HostMenu.ItemsToGrabMenu.GetNormalizedInventoryMenuBounds(), _panelButton.MenuChest, "palette", _componentOnClick);
+         _colourPalette.SetVisible(false);
+
+         this.ActionColours = new IActionColours(Color.FromNonPremultiplied(50, 60, 70, 255), Color.White, Color.White, Color.White);
+
+         this.Components.Add(_panelButton);
+         this.Components.Add(_colourPalette);
+      }
+   }
+}

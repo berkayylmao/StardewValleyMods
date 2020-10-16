@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+using StardewValley.Objects;
+
+namespace ChestEx.Types.CustomTypes {
+   public class InteractableMenuChest : Chest {
+      // Private:
+      #region Private
+
+      private Color _targetColour {
+         get { return this.playerChoiceColor.Value; }
+      }
+
+      #endregion
+
+      // Public:
+      #region Public
+
+      // Consts:
+      #region Consts
+
+      public const Int32 CONST_CHEST_SPRITE_SIZE = 16;
+
+      #endregion
+
+      public Single ChestScale { get; set; }
+
+      public Vector2 ChestSize {
+         get {
+            return new Vector2(
+               InteractableMenuChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale,
+               InteractableMenuChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale * 12);
+         }
+      }
+
+      // Inaccessible 'Chest + bases' fields exposed through reflection properties:
+      #region Inaccessible 'Chest + bases' fields exposed through reflection properties
+
+      public Int32 sv_currentLidFrame {
+         get { return Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value; }
+         set { Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value = value; }
+      }
+
+      #endregion
+
+      public void Draw(SpriteBatch b, Vector2 position, Single alpha = 1.0f) {
+         var finalColour = _targetColour * alpha;
+
+         // bottom half
+         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+                position,
+                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, 168, 16, 32),
+                finalColour, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
+
+         // top half
+         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+                position,
+                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, this.sv_currentLidFrame + 38, 16, 32),
+                finalColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
+
+         // botom 'metal hinge'
+         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+                new Vector2(position.X, (position.Y + (21 * this.ChestScale))),
+                new Rectangle(0, 725, 16, 8),
+                Color.White * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
+
+         // top 'metal hinge'
+         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+                position,
+                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, this.sv_currentLidFrame + 46, 16, 32),
+                Color.White * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
+      }
+
+      public void Draw(SpriteBatch b, Rectangle bounds, Single alpha = 1.0f) {
+         this.Draw(b, new Vector2(bounds.X, bounds.Y), alpha);
+      }
+
+      #endregion
+
+      // Constructors:
+      #region Constructors
+
+      public InteractableMenuChest(Single chestScale) : base(false) {
+         this.startingLidFrame.Value = 131;
+         this.resetLidFrame();
+
+         this.ChestScale = chestScale;
+      }
+
+      public InteractableMenuChest(Rectangle bounds) : this((Single)bounds.Width / InteractableMenuChest.CONST_CHEST_SPRITE_SIZE) { }
+
+      #endregion
+   }
+}
