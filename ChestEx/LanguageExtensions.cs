@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -68,6 +67,13 @@ namespace ChestEx.LanguageExtensions {
       /// <returns>Converted version of '<paramref name="point"/>'.</returns>
       public static Vector2 AsXNAVector2(this Point point) {
          return new Vector2(Convert.ToSingle(point.X), Convert.ToSingle(point.Y));
+      }
+
+      public static Point ExtractXYAsXNAPoint(this Rectangle rectangle) {
+         return new Point(rectangle.X, rectangle.Y);
+      }
+      public static Vector2 ExtractXYAsXNAVector2(this Rectangle rectangle) {
+         return new Vector2(Convert.ToSingle(rectangle.X), Convert.ToSingle(rectangle.Y));
       }
    }
 

@@ -19,8 +19,6 @@ using System;
 
 using ChestEx.Types.BaseTypes;
 
-using Microsoft.Xna.Framework;
-
 namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
    public partial class ConfigPanel : BaseTypes.ICustomItemGrabMenuItem {
       // Private:
@@ -44,7 +42,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
       // Constructors:
       #region Constructors
 
-      public ConfigPanel(MainMenu hostMenu) : base(hostMenu, GlobalVars.GameViewport, true, BaseTypes.IActionColours.Default) {
+      public ConfigPanel(MainMenu hostMenu) : base(hostMenu, GlobalVars.GameViewport, true, BaseTypes.Colours.Default) {
       }
 
       #endregion

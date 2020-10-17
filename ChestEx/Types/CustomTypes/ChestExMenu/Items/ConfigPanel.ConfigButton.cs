@@ -57,7 +57,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
          // Constructors:
          #region Constructors
 
-         public ConfigButton(ICustomItemGrabMenuItem hostMenuItem, Point point, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClick = null, String hoverText = "", BaseTypes.IActionColours textureTintColours = null)
+         public ConfigButton(ICustomItemGrabMenuItem hostMenuItem, Point point, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClick = null, String hoverText = "", BaseTypes.Colours textureTintColours = null)
             : base(hostMenuItem, point, true, componentName, onMouseClick, hoverText, textureTintColours) { }
 
          #endregion

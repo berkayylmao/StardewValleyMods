@@ -28,7 +28,7 @@ namespace ChestEx.Types.BaseTypes {
       // Public:
       #region Public
 
-      public IActionColours ActionColours { get; set; }
+      public Colours Colours { get; set; }
 
       public Rectangle Bounds { get => this.bounds; set => this.bounds = value; }
 
@@ -89,25 +89,25 @@ namespace ChestEx.Types.BaseTypes {
       // Constructors:
       #region Constructors
 
-      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours, StardewValley.Item svItem) : base(bounds, svItem) {
-         this.ActionColours = actionColours;
+      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours, StardewValley.Item svItem) : base(bounds, svItem) {
+         this.Colours = colours;
          this.Components = new List<BasicComponent>();
          this.RaiseMouseClickEventOnRelease = raiseMouseClickEventOnRelease;
          this.HostMenu = hostMenu;
          this.SetVisible(true);
       }
 
-      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours, String svItemName, String svItemLabel) : base(bounds, svItemName, svItemLabel) {
-         this.ActionColours = actionColours;
+      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours, String svItemName, String svItemLabel) : base(bounds, svItemName, svItemLabel) {
+         this.Colours = colours;
          this.Components = new List<BasicComponent>();
          this.RaiseMouseClickEventOnRelease = raiseMouseClickEventOnRelease;
          this.HostMenu = hostMenu;
          this.SetVisible(true);
       }
 
-      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, actionColours, String.Empty, String.Empty) { }
+      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, colours, String.Empty, String.Empty) { }
 
-      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, IActionColours.Default) { }
+      public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, Colours.Default) { }
 
       public ICustomMenuItem(ICustomMenu hostMenu, Rectangle bounds) : this(hostMenu, bounds, true) { }
 

@@ -18,43 +18,43 @@
 using Microsoft.Xna.Framework;
 
 namespace ChestEx.Types.BaseTypes {
-   public class IActionColours {
+   public class Colours {
       // Public static instances:
       #region Public static instances
 
-      public static readonly IActionColours Default = new IActionColours(
+      public static readonly Colours Default = new Colours(
          Color.Transparent,
          Color.White,
          Color.White,
          Color.White);
-      public static readonly IActionColours DarkenOnAction = new IActionColours(
+      public static readonly Colours DarkenOnAction = new Colours(
          Color.Transparent,
          Color.FromNonPremultiplied(255,255,255,255),
          Color.FromNonPremultiplied(204,204,204,255),
          Color.FromNonPremultiplied(153,153,153,255));
-      public static readonly IActionColours LightenOnAction = new IActionColours(
+      public static readonly Colours LightenOnAction = new Colours(
          Color.Transparent,
          Color.FromNonPremultiplied(153,153,153,255),
          Color.FromNonPremultiplied(204,204,204,255),
          Color.FromNonPremultiplied(255,255,255,255));
 
-      public static readonly IActionColours TurnTranslucentOnAction = new IActionColours(
+      public static readonly Colours TurnTranslucentOnAction = new Colours(
          Color.Transparent,
          Color.Multiply(Color.White, 1.00f),
          Color.Multiply(Color.White, 0.75f),
          Color.Multiply(Color.White, 0.50f));
-      public static readonly IActionColours TurnSlightlyTranslucentOnAction = new IActionColours(
+      public static readonly Colours TurnSlightlyTranslucentOnAction = new Colours(
          Color.Transparent,
          Color.Multiply(Color.White, 1.00f),
          Color.Multiply(Color.White, 0.85f),
          Color.Multiply(Color.White, 0.70f));
 
-      public static readonly IActionColours TurnOpaqueOnAction = new IActionColours(
+      public static readonly Colours TurnOpaqueOnAction = new Colours(
          Color.Transparent,
          Color.Multiply(Color.White, 0.50f),
          Color.Multiply(Color.White, 0.75f),
          Color.Multiply(Color.White, 1.00f));
-      public static readonly IActionColours TurnSlightlyOpaqueOnAction = new IActionColours(
+      public static readonly Colours TurnSlightlyOpaqueOnAction = new Colours(
          Color.Transparent,
          Color.Multiply(Color.White, 0.50f),
          Color.Multiply(Color.White, 0.65f),
@@ -75,14 +75,14 @@ namespace ChestEx.Types.BaseTypes {
       // Constructors:
       #region Constructors
 
-      public IActionColours(Color backgroundColour, Color foregroundColour, Color hoverColour, Color pressedColour) {
+      public Colours(Color backgroundColour, Color foregroundColour, Color hoverColour, Color pressedColour) {
          this.BackgroundColour = backgroundColour;
          this.ForegroundColour = foregroundColour;
          this.HoverColour = hoverColour;
          this.PressedColour = pressedColour;
       }
 
-      public IActionColours() {
+      public Colours() {
          this.BackgroundColour = Default.BackgroundColour;
          this.ForegroundColour = Default.ForegroundColour;
          this.HoverColour = Default.HoverColour;

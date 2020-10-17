@@ -16,12 +16,6 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
@@ -32,14 +26,14 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley.Objects;
 
 namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
-   public partial class ChestColouringPanel : BaseTypes.ICustomItemGrabMenuItem {
+   public partial class ChestColouringPanel : ICustomItemGrabMenuItem {
       // Private:
 
       private ColourPalette _colourPalette;
 
       private Boolean _isShowingColourEditors;
 
-      private ChestAsOpenPanelButton _panelButton;
+      private ExtendedSVObjects.ExtendedChestInCustomItemGrabMenu _panelButton;
 
       // Component event handlers:
       #region Component event handlers
@@ -74,9 +68,9 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
                wrap_rectangle_ItemsToGrabMenu.X, wrap_rectangle_ItemsToGrabMenu.Y,
                wrap_rectangle_ItemsToGrabMenu.Width, wrap_rectangle_ItemsToGrabMenu.Height,
                false, true,
-               r: this.ActionColours.BackgroundColour.R,
-               g: this.ActionColours.BackgroundColour.G,
-               b: this.ActionColours.BackgroundColour.B);
+               r: this.Colours.BackgroundColour.R,
+               g: this.Colours.BackgroundColour.G,
+               b: this.Colours.BackgroundColour.B);
          }
 
          base.Draw(b);
@@ -84,7 +78,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
 
       // Constructors:
 
-      public ChestColouringPanel(BaseTypes.ICustomItemGrabMenu hostMenu) : base(hostMenu, GlobalVars.GameViewport, true, BaseTypes.IActionColours.Default) {
+      public ChestColouringPanel(ICustomItemGrabMenu hostMenu) : base(hostMenu, GlobalVars.GameViewport, true, Colours.Default) {
          _isShowingColourEditors = false;
          /*
           * 
@@ -101,18 +95,18 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
             source_menu_bounds.Width / Convert.ToInt32(2.91f * StardewValley.Game1.options.zoomLevel) // using 'width' here since Chest.height is basically Chest.width * 2
             );
 
-         _panelButton = new ChestAsOpenPanelButton(this,
+         _panelButton = new ExtendedSVObjects.ExtendedChestInCustomItemGrabMenu(this,
             new Rectangle(
                (source_menu_bounds.X / 2) - (menu_chest_size.X / 2),
                (this.Bounds.Height / 2) - Convert.ToInt32(menu_chest_size.Y / 1.85f),
                menu_chest_size.X,
                menu_chest_size.Y),
-            "openPanelBTN", _componentOnClick, "Configure this chest", BaseTypes.IActionColours.TurnSlightlyTranslucentOnAction);
+            "openPanelBTN", _componentOnClick, "Configure this chest", BaseTypes.Colours.TurnSlightlyTranslucentOnAction);
 
          _colourPalette = new ColourPalette(this, this.HostMenu.ItemsToGrabMenu.GetNormalizedInventoryMenuBounds(), _panelButton.MenuChest, "palette", _componentOnClick);
          _colourPalette.SetVisible(false);
 
-         this.ActionColours = new IActionColours(Color.FromNonPremultiplied(50, 60, 70, 255), Color.White, Color.White, Color.White);
+         this.Colours = new Colours(Color.FromNonPremultiplied(50, 60, 70, 255), Color.White, Color.White, Color.White);
 
          this.Components.Add(_panelButton);
          this.Components.Add(_colourPalette);

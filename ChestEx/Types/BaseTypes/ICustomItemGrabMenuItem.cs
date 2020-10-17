@@ -36,17 +36,17 @@ namespace ChestEx.Types.BaseTypes {
       // Constructors:
       #region Constructors
 
-      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours, StardewValley.Item svItem) : base(null, bounds, raiseMouseClickEventOnRelease, actionColours, svItem) {
+      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours, StardewValley.Item svItem) : base(null, bounds, raiseMouseClickEventOnRelease, colours, svItem) {
          this.HostMenu = hostMenu;
       }
 
-      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours, String svItemName, String svItemLabel) : base(null, bounds, raiseMouseClickEventOnRelease, actionColours, svItemName, svItemLabel) {
+      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours, String svItemName, String svItemLabel) : base(null, bounds, raiseMouseClickEventOnRelease, colours, svItemName, svItemLabel) {
          this.HostMenu = hostMenu;
       }
 
-      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, IActionColours actionColours) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, actionColours, String.Empty, String.Empty) { }
+      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, Colours colours) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, colours, String.Empty, String.Empty) { }
 
-      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, IActionColours.Default) { }
+      public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds, Boolean raiseMouseClickEventOnRelease) : this(hostMenu, bounds, raiseMouseClickEventOnRelease, Colours.Default) { }
 
       public ICustomItemGrabMenuItem(ICustomItemGrabMenu hostMenu, Rectangle bounds) : this(hostMenu, bounds, true) { }
 

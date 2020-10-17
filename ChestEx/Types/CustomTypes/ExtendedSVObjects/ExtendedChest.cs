@@ -16,18 +16,14 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using StardewValley.Objects;
 
-namespace ChestEx.Types.CustomTypes {
-   public class InteractableMenuChest : Chest {
+namespace ChestEx.Types.CustomTypes.ExtendedSVObjects {
+   public class ExtendedChest : Chest {
       // Private:
       #region Private
 
@@ -52,8 +48,8 @@ namespace ChestEx.Types.CustomTypes {
       public Vector2 ChestSize {
          get {
             return new Vector2(
-               InteractableMenuChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale,
-               InteractableMenuChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale * 12);
+               ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale,
+               ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale * 12);
          }
       }
 
@@ -104,14 +100,14 @@ namespace ChestEx.Types.CustomTypes {
       // Constructors:
       #region Constructors
 
-      public InteractableMenuChest(Single chestScale) : base(false) {
+      public ExtendedChest(Single chestScale) : base(false) {
          this.startingLidFrame.Value = 131;
          this.resetLidFrame();
 
          this.ChestScale = chestScale;
       }
 
-      public InteractableMenuChest(Rectangle bounds) : this((Single)bounds.Width / InteractableMenuChest.CONST_CHEST_SPRITE_SIZE) { }
+      public ExtendedChest(Rectangle bounds) : this((Single)bounds.Width / ExtendedChest.CONST_CHEST_SPRITE_SIZE) { }
 
       #endregion
    }

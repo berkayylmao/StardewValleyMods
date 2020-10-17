@@ -17,14 +17,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using ChestEx.LanguageExtensions;
-
-using Harmony;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -69,7 +63,7 @@ namespace ChestEx.Types.BaseTypes {
             });
          }
 
-         ICustomMenu.MouseStateEx last_mouse_state = e.Button switch
+         var last_mouse_state = e.Button switch
          {
             StardewModdingAPI.SButton.MouseLeft => _lastMouseStates.left,
             StardewModdingAPI.SButton.MouseRight => _lastMouseStates.right,
@@ -117,7 +111,7 @@ namespace ChestEx.Types.BaseTypes {
          }
 
          // check data for _eventMouseClick
-         ICustomMenu.MouseStateEx last_mouse_state = e.Button switch
+         var last_mouse_state = e.Button switch
          {
             StardewModdingAPI.SButton.MouseLeft => _lastMouseStates.left,
             StardewModdingAPI.SButton.MouseRight => _lastMouseStates.right,
@@ -186,7 +180,7 @@ namespace ChestEx.Types.BaseTypes {
       protected virtual void updateClonedMenu() {
          if (StardewValley.Game1.activeClickableMenu is ICustomItemGrabMenu newMenu) {
             newMenu.setSourceItem(this.sv_sourceItem);
-            if (StardewValley.Game1.options.SnappyMenus) {
+            if (StardewValley.Game1.options.snappyMenus && StardewValley.Game1.options.gamepadControls) {
                newMenu.currentlySnappedComponent = this.currentlySnappedComponent;
                newMenu.snapCursorToCurrentSnappedComponent();
             }
@@ -268,9 +262,9 @@ namespace ChestEx.Types.BaseTypes {
                   new Rectangle(this.chestColorPicker.xPositionOnScreen + (IClickableMenu.borderWidth / 2) + (j * 9 * 4), this.chestColorPicker.yPositionOnScreen + (IClickableMenu.borderWidth / 2), 36, 28), "")
                {
                   myID = j + 4343,
-                  rightNeighborID = ((j < this.chestColorPicker.totalColors - 1) ? (j + 4343 + 1) : -1),
-                  leftNeighborID = ((j > 0) ? (j + 4343 - 1) : -1),
-                  downNeighborID = ((this.ItemsToGrabMenu != null && this.ItemsToGrabMenu.inventory.Count > 0) ? 53910 : 0)
+                  rightNeighborID = (j < this.chestColorPicker.totalColors - 1) ? (j + 4343 + 1) : -1,
+                  leftNeighborID = (j > 0) ? (j + 4343 - 1) : -1,
+                  downNeighborID = (this.ItemsToGrabMenu != null && this.ItemsToGrabMenu.inventory.Count > 0) ? 53910 : 0
                });
             }
          } else {
@@ -282,8 +276,8 @@ namespace ChestEx.Types.BaseTypes {
             this.discreteColorPickerCC = null;
          }
 
-         if (createFillStacksButton) {
-            this.fillStacksButton = new ClickableTextureComponent("",
+         this.fillStacksButton = createFillStacksButton
+            ? new ClickableTextureComponent("",
                new Rectangle(source_menu_bounds.X + source_menu_bounds.Width, source_menu_bounds.Y + 168, 64, 64),
                "", StardewValley.Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"),
                StardewValley.Game1.mouseCursors, new Rectangle(103, 469, 16, 16), 4f, false)
@@ -293,13 +287,11 @@ namespace ChestEx.Types.BaseTypes {
                downNeighborID = ItemGrabMenu.region_organizeButton,
                leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
                region = ItemGrabMenu.region_organizationButtons
-            };
-         } else {
-            this.fillStacksButton = null;
-         }
+            }
+            : null;
 
-         if (createOrganizeButton) {
-            this.organizeButton = new ClickableTextureComponent("",
+         this.organizeButton = createOrganizeButton
+            ? new ClickableTextureComponent("",
                new Rectangle(source_menu_bounds.X + source_menu_bounds.Width, source_menu_bounds.Y + 244, 64, 64),
                "", StardewValley.Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"),
                StardewValley.Game1.mouseCursors, new Rectangle(162, 440, 16, 16), 4f, false)
@@ -309,10 +301,8 @@ namespace ChestEx.Types.BaseTypes {
                downNeighborID = MenuWithInventory.region_trashCan,
                leftNeighborID = ClickableComponent.SNAP_AUTOMATIC,
                region = ItemGrabMenu.region_organizationButtons
-            };
-         } else {
-            this.organizeButton = null;
-         }
+            }
+            : null;
 
          this.ItemsToGrabMenu.GetBorder(InventoryMenu.BorderSide.Right).ForEach((cc) =>
          {
@@ -334,9 +324,7 @@ namespace ChestEx.Types.BaseTypes {
       /// The underlying <see cref="ItemGrabMenu"/>'s bound values wrapped in a <see cref="Rectangle"/>.
       /// </summary>
       public Rectangle Bounds {
-         get {
-            return new Rectangle(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height);
-         }
+         get => new Rectangle(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height);
          private set {
             this.xPositionOnScreen = value.X;
             this.yPositionOnScreen = value.Y;
@@ -350,10 +338,7 @@ namespace ChestEx.Types.BaseTypes {
       public List<ICustomMenuItem> MenuItems { get; set; }
 
       public T GetSourceAs<T>() where T : StardewValley.Item {
-         if (this.sv_sourceItem is T)
-            return this.sv_sourceItem as T;
-
-         return null;
+         return this.sv_sourceItem is T ? this.sv_sourceItem as T : null;
       }
 
       // Virtuals:
@@ -514,7 +499,7 @@ namespace ChestEx.Types.BaseTypes {
          // inform items
          this.MenuItems.ForEach((i) => i.OnGameWindowSizeChanged(oldBounds, newBounds));
          // re-create organization buttons
-         this.createOrganizationButtons((this.source == ItemGrabMenu.source_chest && this.sv_sourceItem is Chest), true, true);
+         this.createOrganizationButtons(this.source == ItemGrabMenu.source_chest && this.sv_sourceItem is Chest, true, true);
       }
 
       /// <summary>
@@ -549,23 +534,27 @@ namespace ChestEx.Types.BaseTypes {
          if (this.heldItem is null && this.showReceivingMenu) {
             this.heldItem = this.ItemsToGrabMenu.leftClick(x, y, this.heldItem, false);
 
-            if (this.heldItem is StardewValley.Item)
+            if (this.heldItem is StardewValley.Item) {
                this.behaviorOnItemGrab?.Invoke(this.heldItem, StardewValley.Game1.player);
+
+               this.updateClonedMenu();
+            }
 
             if (StardewValley.Game1.player.addItemToInventoryBool(this.heldItem, false)) {
                this.heldItem = null;
                StardewValley.Game1.playSound("coin");
-            }
 
-            this.updateClonedMenu();
+               this.updateClonedMenu();
+            }
          } else if ((this.reverseGrab || !(this.sv_behaviorFunction is null)) && this.isWithinBounds(x, y)) {
-            if (this.heldItem is StardewValley.Item)
+            if (this.heldItem is StardewValley.Item) {
                this.sv_behaviorFunction?.Invoke(this.heldItem, StardewValley.Game1.player);
+
+               this.updateClonedMenu();
+            }
 
             if (this.destroyItemOnClick)
                this.heldItem = null;
-
-            this.updateClonedMenu();
          }
 
          // Handle default chest colour picker
@@ -585,7 +574,7 @@ namespace ChestEx.Types.BaseTypes {
 
          // Handle default organize button
          if (!(this.organizeButton is null) && this.organizeButton.visible && this.organizeButton.containsPoint(x, y)) {
-            ClickableComponent last_snapped_component = this.currentlySnappedComponent;
+            var last_snapped_component = this.currentlySnappedComponent;
             ItemGrabMenu.organizeItemsInList(this.ItemsToGrabMenu.actualInventory);
 
             StardewValley.Game1.activeClickableMenu = this.clone().setEssential(this.sv_essential);
@@ -633,25 +622,29 @@ namespace ChestEx.Types.BaseTypes {
 
          // Handle item storing/retrieving
          if (this.heldItem is null && this.showReceivingMenu) {
-            this.heldItem = this.ItemsToGrabMenu.rightClick(x, y, this.heldItem, false);
+            this.heldItem = this.ItemsToGrabMenu.leftClick(x, y, this.heldItem, false);
 
-            if (this.heldItem is StardewValley.Item)
+            if (this.heldItem is StardewValley.Item) {
                this.behaviorOnItemGrab?.Invoke(this.heldItem, StardewValley.Game1.player);
+
+               this.updateClonedMenu();
+            }
 
             if (StardewValley.Game1.player.addItemToInventoryBool(this.heldItem, false)) {
                this.heldItem = null;
                StardewValley.Game1.playSound("coin");
-            }
 
-            this.updateClonedMenu();
+               this.updateClonedMenu();
+            }
          } else if ((this.reverseGrab || !(this.sv_behaviorFunction is null)) && this.isWithinBounds(x, y)) {
-            if (this.heldItem is StardewValley.Item)
+            if (this.heldItem is StardewValley.Item) {
                this.sv_behaviorFunction?.Invoke(this.heldItem, StardewValley.Game1.player);
+
+               this.updateClonedMenu();
+            }
 
             if (this.destroyItemOnClick)
                this.heldItem = null;
-
-            this.updateClonedMenu();
          }
       }
 
@@ -661,7 +654,7 @@ namespace ChestEx.Types.BaseTypes {
       #region ItemGrabMenu submenu options
 
       public struct InventoryMenuOptions {
-         private Action<Boolean> _fnSetVisibleExtra;
+         private readonly Action<Boolean> _fnSetVisibleExtra;
 
          public Color BackgroundColour { get; set; }
 
@@ -720,32 +713,32 @@ namespace ChestEx.Types.BaseTypes {
       #region Inaccessible 'ItemGrabMenu + bases' fields exposed through reflection properties
 
       public ItemGrabMenu.behaviorOnItemSelect sv_behaviorFunction {
-         get { return Harmony.Traverse.Create(this).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction").Value; }
-         set { Harmony.Traverse.Create(this).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction").Value;
+         set => Harmony.Traverse.Create(this).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction").Value = value;
       }
       public Boolean sv_essential {
-         get { return Harmony.Traverse.Create(this).Field<Boolean>("essential").Value; }
-         set { Harmony.Traverse.Create(this).Field<Boolean>("essential").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<Boolean>("essential").Value;
+         set => Harmony.Traverse.Create(this).Field<Boolean>("essential").Value = value;
       }
       public StardewValley.Item sv_hoverItem {
-         get { return Harmony.Traverse.Create(this).Field<StardewValley.Item>("hoverItem").Value; }
-         set { Harmony.Traverse.Create(this).Field<StardewValley.Item>("hoverItem").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<StardewValley.Item>("hoverItem").Value;
+         set => Harmony.Traverse.Create(this).Field<StardewValley.Item>("hoverItem").Value = value;
       }
       public String sv_message {
-         get { return Harmony.Traverse.Create(this).Field<String>("message").Value; }
-         set { Harmony.Traverse.Create(this).Field<String>("message").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<String>("message").Value;
+         set => Harmony.Traverse.Create(this).Field<String>("message").Value = value;
       }
       public StardewValley.TemporaryAnimatedSprite sv_poof {
-         get { return Harmony.Traverse.Create(this).Field<StardewValley.TemporaryAnimatedSprite>("poof").Value; }
-         set { Harmony.Traverse.Create(this).Field<StardewValley.TemporaryAnimatedSprite>("poof").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<StardewValley.TemporaryAnimatedSprite>("poof").Value;
+         set => Harmony.Traverse.Create(this).Field<StardewValley.TemporaryAnimatedSprite>("poof").Value = value;
       }
       public Boolean sv_snappedtoBottom {
-         get { return Harmony.Traverse.Create(this).Field<Boolean>("snappedtoBottom").Value; }
-         set { Harmony.Traverse.Create(this).Field<Boolean>("snappedtoBottom").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<Boolean>("snappedtoBottom").Value;
+         set => Harmony.Traverse.Create(this).Field<Boolean>("snappedtoBottom").Value = value;
       }
       public StardewValley.Item sv_sourceItem {
-         get { return Harmony.Traverse.Create(this).Field<StardewValley.Item>("sourceItem").Value; }
-         set { Harmony.Traverse.Create(this).Field<StardewValley.Item>("sourceItem").Value = value; }
+         get => Harmony.Traverse.Create(this).Field<StardewValley.Item>("sourceItem").Value;
+         set => Harmony.Traverse.Create(this).Field<StardewValley.Item>("sourceItem").Value = value;
       }
 
       #endregion
@@ -759,6 +752,7 @@ namespace ChestEx.Types.BaseTypes {
       /// Called by patched code in the game. Parameters are 1:1 with the original constructor.
       /// </summary>
       /// <remarks>All '<see cref="ItemGrabMenu"/>' constructors should be patched to skip running their code in order for this menu to function correctly.</remarks>
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "This ctor is arbitrated from game code.")]
       public ICustomItemGrabMenu(IList<StardewValley.Item> inventory,
                                  Boolean reverseGrab,
                                  Boolean showReceivingMenu,
@@ -830,7 +824,7 @@ namespace ChestEx.Types.BaseTypes {
             // create organization items
             {
                if (showOrganizeButton)
-                  this.createOrganizationButtons((this.source == ItemGrabMenu.source_chest && this.sv_sourceItem is Chest), true, true);
+                  this.createOrganizationButtons(this.source == ItemGrabMenu.source_chest && this.sv_sourceItem is Chest, true, true);
             }
 
             // give trash can neighbour ids
@@ -844,13 +838,14 @@ namespace ChestEx.Types.BaseTypes {
                if (!(this.okButton is null)) {
                   this.okButton.leftNeighborID = 11;
 
-                  for (Int32 i = 0; i < this.inventory.inventory.Count; i += 11)
+                  for (Int32 i = 0; i < this.inventory.inventory.Count; i += 11) {
                      if (this.inventory.inventory[i] is ClickableComponent)
                         this.inventory.inventory[i].rightNeighborID = this.okButton.myID;
+                  }
                }
             }
 
-            base.populateClickableComponentList();
+            this.populateClickableComponentList();
             if (StardewValley.Game1.options.SnappyMenus)
                this.snapToDefaultClickableComponent();
             this.SetupBorderNeighbors();

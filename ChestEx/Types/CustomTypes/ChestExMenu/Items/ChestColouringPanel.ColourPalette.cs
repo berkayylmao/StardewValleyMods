@@ -24,7 +24,6 @@ using ChestEx.Types.BaseTypes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using StardewValley.Menus;
 using StardewValley.Objects;
 
 namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
@@ -127,7 +126,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
                b.Draw(texture, this.Bounds, this.textureTintColourCurrent);
 
             if (this.cursorStatus != CursorStatus.None && !String.IsNullOrWhiteSpace(this.hoverText))
-               ICustomMenu.DrawHoverText(b, StardewValley.Game1.smallFont, this.hoverText, (8, 8, 8, 8), this.HostMenuItem.ActionColours.BackgroundColour, this.HostMenuItem.ActionColours.ForegroundColour);
+               ICustomMenu.DrawHoverText(b, StardewValley.Game1.smallFont, this.hoverText, (8, 8, 8, 8), this.HostMenuItem.Colours.BackgroundColour, this.HostMenuItem.Colours.ForegroundColour);
          }
 
          public override void OnGameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) {

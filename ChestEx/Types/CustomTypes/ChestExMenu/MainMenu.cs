@@ -17,19 +17,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.CustomTypes.ChestExMenu.Items;
 
-using Microsoft.Win32.SafeHandles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using StardewValley.Menus;
-using StardewValley.Objects;
 
 namespace ChestEx.Types.CustomTypes.ChestExMenu {
    public class MainMenu : BaseTypes.ICustomItemGrabMenu {
@@ -143,14 +138,14 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
                this.createOrganizationButtons(false, false, false);
                this.okButton = this.trashCan = null;
                if (!(this.dropItemInvisibleButton is null)) {
-                  dropItemInvisibleButton.bounds = new Rectangle(
+                  this.dropItemInvisibleButton.bounds = new Rectangle(
                      this.PlayerInventoryOptions.Bounds.X + (this.PlayerInventoryOptions.Bounds.Width / 2),
                      this.PlayerInventoryOptions.Bounds.Y - ((this.PlayerInventoryOptions.Bounds.Y - (this.SourceInventoryOptions.Bounds.Y + this.SourceInventoryOptions.Bounds.Height)) / 2),
                      64, 64);
                }
             }
 
-            base.populateClickableComponentList();
+            this.populateClickableComponentList();
             if (StardewValley.Game1.options.SnappyMenus)
                this.snapToDefaultClickableComponent();
             this.SetupBorderNeighbors();

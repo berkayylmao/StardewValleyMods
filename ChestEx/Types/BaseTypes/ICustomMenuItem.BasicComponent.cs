@@ -73,7 +73,7 @@ namespace ChestEx.Types.BaseTypes {
          }
 
          protected Texture2D texture;
-         protected IActionColours textureTintColours;
+         protected Colours textureTintColours;
 
          // Virtuals:
          #region Virtuals
@@ -189,14 +189,14 @@ namespace ChestEx.Types.BaseTypes {
          // Constructors:
          #region Constructors
 
-         public BasicComponent(ICustomMenuItem hostMenuItem, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, String componentName, EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler, String hoverText, IActionColours textureTintColours) {
+         public BasicComponent(ICustomMenuItem hostMenuItem, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, String componentName, EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler, String hoverText, Colours textureTintColours) {
             _cursorImmutable = false;
 
             this.cursorStatus = CursorStatus.None;
             this.hoverText = hoverText;
             this.onMouseClickEventHandler = onMouseClickHandler;
             this.texture = null;
-            this.textureTintColours = textureTintColours ?? IActionColours.Default;
+            this.textureTintColours = textureTintColours ?? Colours.Default;
 
             this.Bounds = bounds;
             this.HostMenuItem = hostMenuItem;
@@ -206,7 +206,7 @@ namespace ChestEx.Types.BaseTypes {
             this.SetVisible(true);
          }
 
-         public BasicComponent(ICustomMenuItem hostMenuItem, Point point, Boolean raiseMouseClickEventOnRelease = true, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler = null, String hoverText = "", IActionColours textureTintColours = null)
+         public BasicComponent(ICustomMenuItem hostMenuItem, Point point, Boolean raiseMouseClickEventOnRelease = true, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler = null, String hoverText = "", Colours textureTintColours = null)
             : this(hostMenuItem, new Rectangle(point.X, point.Y, -1, -1), raiseMouseClickEventOnRelease, componentName, onMouseClickHandler, hoverText, textureTintColours) { }
 
          #endregion

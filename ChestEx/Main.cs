@@ -102,7 +102,7 @@ namespace ChestEx {
                   var baseCtor = AccessTools.Constructor(typeof(MenuWithInventory),
                                                          new Type[] { typeof(InventoryMenu.highlightThisItem), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Int32), typeof(Int32) });
                   Boolean patched = false;
-                  Label lblSkip = ilg.DefineLabel();
+                  var lblSkip = ilg.DefineLabel();
 
                   foreach (var instruction in instructions) {
                      if (!patched && instruction.opcode == OpCodes.Call
@@ -266,7 +266,7 @@ namespace ChestEx {
                                                                       new Type[] { typeof(Int32), typeof(Int32), typeof(Int32), typeof(Int32) });
 
                      Boolean patched = false;
-                     Label lblSkip = ilg.DefineLabel();
+                     var lblSkip = ilg.DefineLabel();
 
                      foreach (var instruction in instructions) {
                         if (!patched && instruction.opcode == OpCodes.Call && (MethodBase)instruction.operand == xna_Rectangle_ctor) {

@@ -22,7 +22,6 @@ using ChestEx.LanguageExtensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 using StardewValley.Menus;
 
@@ -58,7 +57,7 @@ namespace ChestEx.Types.BaseTypes {
             });
          }
 
-         MouseStateEx last_mouse_state = e.Button switch
+         var last_mouse_state = e.Button switch
          {
             StardewModdingAPI.SButton.MouseLeft => _lastMouseStates.left,
             StardewModdingAPI.SButton.MouseRight => _lastMouseStates.right,
@@ -106,7 +105,7 @@ namespace ChestEx.Types.BaseTypes {
          }
 
          // check data for _eventMouseClick
-         MouseStateEx last_mouse_state = e.Button switch
+         var last_mouse_state = e.Button switch
          {
             StardewModdingAPI.SButton.MouseLeft => _lastMouseStates.left,
             StardewModdingAPI.SButton.MouseRight => _lastMouseStates.right,
@@ -269,7 +268,7 @@ namespace ChestEx.Types.BaseTypes {
          // dialogue box background, provided by the game
          StardewValley.Game1.drawDialogueBox(
             bounds.X, bounds.Y, bounds.Width, bounds.Height,
-            false, true, null, false, true, colMenuBackground.R, colMenuBackground.G, colMenuBackground.B);
+            false, true, null, false, true, this.colMenuBackground.R, this.colMenuBackground.G, this.colMenuBackground.B);
 
          this.MenuItems.ForEach((i) =>
          {
@@ -321,7 +320,7 @@ namespace ChestEx.Types.BaseTypes {
          var box_rect = new Rectangle(mouse_pos.X + 32,
                                       mouse_pos.Y + 32,
                                       text_size.X + 22 + textPadding.left + textPadding.right,
-                                      text_size.Y + 10 + textPadding.top + textPadding.bottom);
+                                      text_size.Y + 12 + textPadding.top + textPadding.bottom);
 
          // clamp to game viewport
          var safe_area = StardewValley.Utility.getSafeArea();
