@@ -1,5 +1,5 @@
 ﻿//
-//    Copyright (C) 2020 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (C) 2021 Berkay Yigit <berkaytgy@gmail.com>
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -17,216 +17,221 @@
 
 using System;
 
+using ChestEx.LanguageExtensions;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ChestEx.Types.BaseTypes {
-   public partial class ICustomMenuItem {
-      public class BasicComponent : IDisposable {
-         // Protected enums:
-         #region Protected enums
+  public partial class ICustomMenuItem {
+    public class BasicComponent : IDisposable {
+      // Protected enums:
+      #region Protected enums
 
-         protected enum CursorStatus {
-            None,
-            Hovering,
-            LMousePressed,
-            RMousePressed,
-            MMousePressed
-         }
-
-         #endregion
-
-         // Private:
-         #region Private
-
-         private CursorStatus _cursorStatus;
-         private Boolean _cursorImmutable;
-
-         #endregion
-
-         // Protected:
-         #region Protected
-
-         protected String hoverText;
-         protected EventHandler<ICustomMenu.MouseStateEx> onMouseClickEventHandler;
-
-         protected CursorStatus cursorStatus {
-            get { return _cursorStatus; }
-            set {
-               if (!_cursorImmutable)
-                  _cursorStatus = value;
-            }
-         }
-
-         protected Color textureTintColourCurrent {
-            get {
-               return this.cursorStatus switch
-               {
-                  CursorStatus.None => this.textureTintColours.ForegroundColour,
-                  CursorStatus.Hovering => this.textureTintColours.HoverColour,
-                  CursorStatus.LMousePressed => this.textureTintColours.PressedColour,
-                  CursorStatus.RMousePressed => this.textureTintColours.ForegroundColour,
-                  CursorStatus.MMousePressed => this.textureTintColours.ForegroundColour,
-                  _ => Color.Transparent
-               };
-            }
-         }
-
-         protected Texture2D texture;
-         protected Colours textureTintColours;
-
-         // Virtuals:
-         #region Virtuals
-
-         /// <summary>Base implementation returns '<see cref="texture"/>'.</summary>
-         /// <returns>The texture to be drawn for this component.</returns>
-         protected virtual Texture2D GetTexture(GraphicsDevice device) {
-            return this.texture;
-         }
-
-         #endregion
-
-         #endregion
-
-         // Public:
-         #region Public
-
-         public ICustomMenuItem HostMenuItem { get; private set; }
-
-         public Rectangle Bounds { get; protected set; }
-
-         public Boolean IsVisible { get; protected set; }
-
-         public String Name { get; protected set; }
-
-         public Boolean RaiseMouseClickEventOnRelease { get; protected set; }
-
-         // Virtuals:
-         #region Virtuals
-
-         /// <summary>
-         /// Base implementation sets '<see cref="IsVisible"/>' to '<paramref name="isVisible"/>'.
-         /// </summary>
-         /// <param name="isVisible">Whether this menu should be visible.</param>
-         public virtual void SetVisible(Boolean isVisible) {
-            this.IsVisible = isVisible;
-         }
-
-         /// <summary>
-         /// <para>Base implementation (if '<see cref="IsVisible"/>' is true):</para>
-         /// <para>1. Draws the returned texture from '<see cref="GetTexture(GraphicsDevice)"/>', applying '<see cref="textureTintColourCurrent"/>'.</para>
-         /// <para>2. Draws the hover text if needed.</para>
-         /// </summary>
-         public virtual void Draw(SpriteBatch b) {
-            if (!this.IsVisible)
-               return;
-
-            // draw texture
-            if (this.GetTexture(b.GraphicsDevice) is Texture2D texture)
-               b.Draw(texture, this.Bounds, this.textureTintColourCurrent);
-
-            // draw hover text
-            if (this.cursorStatus != CursorStatus.None && !String.IsNullOrWhiteSpace(this.hoverText))
-               StardewValley.Menus.IClickableMenu.drawHoverText(b, this.hoverText, StardewValley.Game1.smallFont);
-         }
-
-         /// <summary>Base implementation disposes of '<see cref="texture"/>'.</summary>
-         public virtual void OnGameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) { this.texture?.Dispose(); }
-
-         // Input event handlers:
-         #region Input event handlers
-
-         /// <summary>Base implementation updates the underlying cursor status.</summary>
-         /// <remarks>MUST BE CALLED!</remarks>
-         public virtual void OnCursorMoved(StardewModdingAPI.Events.CursorMovedEventArgs e) {
-            if (!this.IsVisible)
-               return;
-
-            // check if within bounds
-            if (this.Bounds.Contains(new Point(Convert.ToInt32(e.NewPosition.ScreenPixels.X), Convert.ToInt32(e.NewPosition.ScreenPixels.Y))))
-               this.cursorStatus = CursorStatus.Hovering;
-            else
-               this.cursorStatus = CursorStatus.None;
-         }
-
-         /// <summary>Base implementation calls the supplied OnMouseClick event handler.</summary>
-         public virtual void OnMouseClick(ICustomMenu.MouseStateEx mouseState) {
-            this.onMouseClickEventHandler?.Invoke(this, mouseState);
-         }
-
-         /// <summary>Base implementation updates the underlying cursor status.</summary>
-         /// <remarks>MUST BE CALLED!</remarks>
-         public virtual void OnButtonPressed(StardewModdingAPI.Events.ButtonPressedEventArgs e) {
-            if (!this.IsVisible)
-               return;
-
-            // check if within bounds
-            if (this.Bounds.Contains(new Point(Convert.ToInt32(e.Cursor.ScreenPixels.X), Convert.ToInt32(e.Cursor.ScreenPixels.Y)))
-               && e.Button == StardewModdingAPI.SButton.MouseLeft) {
-               this.cursorStatus = CursorStatus.LMousePressed;
-               _cursorImmutable = true;
-            }
-         }
-
-         /// <summary>Base implementation updates the underlying cursor status.</summary>
-         /// <remarks>MUST BE CALLED!</remarks>
-         public virtual void OnButtonReleased(StardewModdingAPI.Events.ButtonReleasedEventArgs e) {
-            if (!this.IsVisible)
-               return;
-
-            if (e.Button == StardewModdingAPI.SButton.MouseLeft) {
-               _cursorImmutable = false;
-               this.cursorStatus = this.Bounds.Contains(new Point(Convert.ToInt32(e.Cursor.ScreenPixels.X), Convert.ToInt32(e.Cursor.ScreenPixels.Y))) ? CursorStatus.Hovering : CursorStatus.None;
-            }
-         }
-
-         #endregion
-
-         #endregion
-
-         #endregion
-
-         // Constructors:
-         #region Constructors
-
-         public BasicComponent(ICustomMenuItem hostMenuItem, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, String componentName, EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler, String hoverText, Colours textureTintColours) {
-            _cursorImmutable = false;
-
-            this.cursorStatus = CursorStatus.None;
-            this.hoverText = hoverText;
-            this.onMouseClickEventHandler = onMouseClickHandler;
-            this.texture = null;
-            this.textureTintColours = textureTintColours ?? Colours.Default;
-
-            this.Bounds = bounds;
-            this.HostMenuItem = hostMenuItem;
-            this.Name = componentName;
-            this.RaiseMouseClickEventOnRelease = raiseMouseClickEventOnRelease;
-
-            this.SetVisible(true);
-         }
-
-         public BasicComponent(ICustomMenuItem hostMenuItem, Point point, Boolean raiseMouseClickEventOnRelease = true, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler = null, String hoverText = "", Colours textureTintColours = null)
-            : this(hostMenuItem, new Rectangle(point.X, point.Y, -1, -1), raiseMouseClickEventOnRelease, componentName, onMouseClickHandler, hoverText, textureTintColours) { }
-
-         #endregion
-
-         // IDisposable:
-         #region IDisposable
-
-         /// <summary>
-         /// <para>Base implementation:</para>
-         /// <para>1. Calls '<see cref="SetVisible(Boolean)"/>' with 'false'.</para>
-         /// <para>2. Disposes of '<see cref="texture"/>'.</para>
-         /// </summary>
-         public virtual void Dispose() {
-            // hide
-            this.SetVisible(false);
-            // dispose of texture
-            this.texture?.Dispose();
-         }
-
-         #endregion
+      protected enum CursorStatus {
+        None,
+        Hovering,
+        LMousePressed,
+        RMousePressed,
+        MMousePressed
       }
-   }
+
+      #endregion
+
+      // Private:
+      #region Private
+
+      private CursorStatus _cursorStatus;
+      private Boolean _cursorImmutable;
+
+      #endregion
+
+      // Protected:
+      #region Protected
+
+      protected String hoverText;
+      protected EventHandler<ICustomMenu.MouseStateEx> onMouseClickEventHandler;
+
+      protected CursorStatus cursorStatus {
+        get { return _cursorStatus; }
+        set {
+          if (!_cursorImmutable)
+            _cursorStatus = value;
+        }
+      }
+
+      protected Color textureTintColourCurrent {
+        get {
+          return this.cursorStatus switch {
+            CursorStatus.None => this.textureTintColours.ForegroundColour,
+            CursorStatus.Hovering => this.textureTintColours.HoverColour,
+            CursorStatus.LMousePressed => this.textureTintColours.PressedColour,
+            CursorStatus.RMousePressed => this.textureTintColours.ForegroundColour,
+            CursorStatus.MMousePressed => this.textureTintColours.ForegroundColour,
+            _ => Color.Transparent
+          };
+        }
+      }
+
+      protected Texture2D texture;
+      protected Colours textureTintColours;
+
+      // Virtuals:
+      #region Virtuals
+
+      /// <summary>Base implementation returns '<see cref="texture"/>'.</summary>
+      /// <returns>The texture to be drawn for this component.</returns>
+      protected virtual Texture2D GetTexture(GraphicsDevice device) {
+        return this.texture;
+      }
+
+      #endregion
+
+      #endregion
+
+      // Public:
+      #region Public
+
+      public ICustomMenuItem HostMenuItem { get; private set; }
+
+      public Rectangle Bounds { get; protected set; }
+
+      public Boolean IsVisible { get; protected set; }
+
+      public String Name { get; protected set; }
+
+      public Boolean RaiseMouseClickEventOnRelease { get; protected set; }
+
+      // Virtuals:
+      #region Virtuals
+
+      /// <summary>
+      /// Base implementation sets '<see cref="IsVisible"/>' to '<paramref name="isVisible"/>'.
+      /// </summary>
+      /// <param name="isVisible">Whether this menu should be visible.</param>
+      public virtual void SetVisible(Boolean isVisible) {
+        this.IsVisible = isVisible;
+      }
+
+      /// <summary>
+      /// <para>Base implementation (if '<see cref="IsVisible"/>' is true):</para>
+      /// <para>1. Draws the returned texture from '<see cref="GetTexture(GraphicsDevice)"/>', applying '<see cref="textureTintColourCurrent"/>'.</para>
+      /// <para>2. Draws the hover text if needed.</para>
+      /// </summary>
+      public virtual void Draw(SpriteBatch b) {
+        if (!this.IsVisible)
+          return;
+
+        // draw texture
+        if (this.GetTexture(b.GraphicsDevice) is Texture2D texture)
+          b.Draw(texture, this.Bounds, this.textureTintColourCurrent);
+
+        // draw hover text
+        if (this.cursorStatus != CursorStatus.None && !String.IsNullOrWhiteSpace(this.hoverText))
+          StardewValley.Menus.IClickableMenu.drawHoverText(b, this.hoverText, StardewValley.Game1.smallFont);
+      }
+
+      /// <summary>Base implementation disposes of '<see cref="texture"/>'.</summary>
+      public virtual void OnGameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) { this.texture?.Dispose(); }
+
+      // Input event handlers:
+      #region Input event handlers
+
+      /// <summary>Base implementation updates the underlying cursor status.</summary>
+      /// <remarks>MUST BE CALLED!</remarks>
+      public virtual void OnCursorMoved(Vector2 cursorPos) {
+        if (!this.IsVisible)
+          return;
+
+        // check if within bounds
+        if (this.Bounds.Contains(cursorPos.AsXNAPoint()))
+          this.cursorStatus = CursorStatus.Hovering;
+        else
+          this.cursorStatus = CursorStatus.None;
+      }
+
+      /// <summary>Base implementation calls the supplied OnMouseClick event handler.</summary>
+      public virtual void OnMouseClick(ICustomMenu.MouseStateEx mouseState) {
+        this.onMouseClickEventHandler?.Invoke(this, mouseState);
+      }
+
+      /// <summary>Base implementation updates the underlying cursor status.</summary>
+      /// <remarks>MUST BE CALLED!</remarks>
+      public virtual void OnButtonPressed(StardewModdingAPI.Events.ButtonPressedEventArgs e) {
+        if (!this.IsVisible)
+          return;
+
+        var correct_pos = StardewValley.Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
+
+        // check if within bounds
+        if (this.Bounds.Contains(correct_pos.AsXNAPoint())
+           && e.Button == StardewModdingAPI.SButton.MouseLeft) {
+          this.cursorStatus = CursorStatus.LMousePressed;
+          _cursorImmutable = true;
+        }
+      }
+
+      /// <summary>Base implementation updates the underlying cursor status.</summary>
+      /// <remarks>MUST BE CALLED!</remarks>
+      public virtual void OnButtonReleased(StardewModdingAPI.Events.ButtonReleasedEventArgs e) {
+        if (!this.IsVisible)
+          return;
+
+        var correct_pos = StardewValley.Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
+
+        if (e.Button == StardewModdingAPI.SButton.MouseLeft) {
+          _cursorImmutable = false;
+          this.cursorStatus = this.Bounds.Contains(correct_pos.AsXNAPoint()) ? CursorStatus.Hovering : CursorStatus.None;
+        }
+      }
+
+      #endregion
+
+      #endregion
+
+      #endregion
+
+      // Constructors:
+      #region Constructors
+
+      public BasicComponent(ICustomMenuItem hostMenuItem, Rectangle bounds, Boolean raiseMouseClickEventOnRelease, String componentName, EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler, String hoverText, Colours textureTintColours) {
+        _cursorImmutable = false;
+
+        this.cursorStatus = CursorStatus.None;
+        this.hoverText = hoverText;
+        this.onMouseClickEventHandler = onMouseClickHandler;
+        this.texture = null;
+        this.textureTintColours = textureTintColours ?? Colours.Default;
+
+        this.Bounds = bounds;
+        this.HostMenuItem = hostMenuItem;
+        this.Name = componentName;
+        this.RaiseMouseClickEventOnRelease = raiseMouseClickEventOnRelease;
+
+        this.SetVisible(true);
+      }
+
+      public BasicComponent(ICustomMenuItem hostMenuItem, Point point, Boolean raiseMouseClickEventOnRelease = true, String componentName = "", EventHandler<ICustomMenu.MouseStateEx> onMouseClickHandler = null, String hoverText = "", Colours textureTintColours = null)
+         : this(hostMenuItem, new Rectangle(point.X, point.Y, -1, -1), raiseMouseClickEventOnRelease, componentName, onMouseClickHandler, hoverText, textureTintColours) { }
+
+      #endregion
+
+      // IDisposable:
+      #region IDisposable
+
+      /// <summary>
+      /// <para>Base implementation:</para>
+      /// <para>1. Calls '<see cref="SetVisible(Boolean)"/>' with 'false'.</para>
+      /// <para>2. Disposes of '<see cref="texture"/>'.</para>
+      /// </summary>
+      public virtual void Dispose() {
+        // hide
+        this.SetVisible(false);
+        // dispose of texture
+        this.texture?.Dispose();
+      }
+
+      #endregion
+    }
+  }
 }

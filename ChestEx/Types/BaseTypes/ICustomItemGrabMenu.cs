@@ -1,5 +1,5 @@
 ﻿//
-//    Copyright (C) 2020 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (C) 2021 Berkay Yigit <berkaytgy@gmail.com>
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -47,8 +47,9 @@ namespace ChestEx.Types.BaseTypes {
           if (!i.IsVisible)
             return;
 
-          i.OnCursorMoved(e);
-          i.Components.ForEach((c) => { if (c.IsVisible) c.OnCursorMoved(e); });
+          var correct_pos = StardewValley.Utility.ModifyCoordinatesForUIScale(e.NewPosition.ScreenPixels);
+          i.OnCursorMoved(correct_pos);
+          i.Components.ForEach((c) => { if (c.IsVisible) c.OnCursorMoved(correct_pos); });
         });
       }
     }
@@ -70,7 +71,9 @@ namespace ChestEx.Types.BaseTypes {
       };
 
       if (!last_mouse_state.Equals(ICustomMenu.MouseStateEx.Default)) {
-        last_mouse_state.Pos = e.Cursor.ScreenPixels;
+        var correct_pos = StardewValley.Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
+
+        last_mouse_state.Pos = correct_pos;
         last_mouse_state.ButtonState = StardewModdingAPI.SButtonState.Pressed;
 
         var xna_cursor_pos = last_mouse_state.Pos.AsXNAPoint();
@@ -118,10 +121,11 @@ namespace ChestEx.Types.BaseTypes {
 
       if (!last_mouse_state.Equals(ICustomMenu.MouseStateEx.Default)) { // is a mouse activity
         if (last_mouse_state.ButtonState == StardewModdingAPI.SButtonState.Pressed) { // is a click
+          var correct_pos = StardewValley.Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
           // save OnPressed pos
           var mousePressedPoint = last_mouse_state.Pos.AsXNAPoint();
           // update mouse state pos
-          last_mouse_state.Pos = e.Cursor.ScreenPixels;
+          last_mouse_state.Pos = correct_pos;
           // gen xna cursor pos
           var xna_cursor_pos = last_mouse_state.Pos.AsXNAPoint();
 

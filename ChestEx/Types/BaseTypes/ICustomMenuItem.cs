@@ -1,5 +1,5 @@
 ﻿//
-//    Copyright (C) 2020 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (C) 2021 Berkay Yigit <berkaytgy@gmail.com>
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -74,7 +74,7 @@ namespace ChestEx.Types.BaseTypes {
       public virtual void OnMouseClick(ICustomMenu.MouseStateEx mouseState) { }
 
       /// <summary>Base implementation does nothing.</summary>
-      public virtual void OnCursorMoved(StardewModdingAPI.Events.CursorMovedEventArgs e) { }
+      public virtual void OnCursorMoved(Vector2 cursorPos) { }
 
       /// <summary>Base implementation does nothing.</summary>
       public virtual void OnButtonPressed(StardewModdingAPI.Events.ButtonPressedEventArgs e) { }

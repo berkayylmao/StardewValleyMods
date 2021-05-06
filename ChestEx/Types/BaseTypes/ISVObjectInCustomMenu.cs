@@ -1,5 +1,5 @@
 ﻿//
-//    Copyright (C) 2020 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (C) 2021 Berkay Yigit <berkaytgy@gmail.com>
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -104,8 +104,8 @@ namespace ChestEx.Types.BaseTypes {
       /// <summary>
       /// Calls '<see cref="playObjectAnimation()"/>' if cursor has activity on this object, '<see cref="revertObjectAnimation()"/>' if not.
       /// </summary>
-      public override void OnCursorMoved(StardewModdingAPI.Events.CursorMovedEventArgs e) {
-         base.OnCursorMoved(e);
+      public override void OnCursorMoved(Vector2 cursorPos) {
+         base.OnCursorMoved(cursorPos);
 
          if (this.cursorStatus != CursorStatus.None)
             this.playObjectAnimation();
