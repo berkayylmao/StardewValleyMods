@@ -18,14 +18,22 @@
 using StardewModdingAPI;
 
 namespace ChestEx {
-   public static class GlobalVars {
-      public static IModHelper SMAPIHelper;
-      public static IMonitor SMAPIMonitor;
+  public static class GlobalVars {
+    public static IModHelper SMAPIHelper;
+    public static IMonitor SMAPIMonitor;
 
-      public static Microsoft.Xna.Framework.Rectangle GameViewport {
-         get {
-            return StardewValley.Utility.getSafeArea();
-         }
+    public static Microsoft.Xna.Framework.Rectangle UIViewport {
+      get {
+        var _ = StardewValley.Game1.uiViewport;
+        return new Microsoft.Xna.Framework.Rectangle(
+          0, 0, _.Width, _.Height);
       }
-   }
+    }
+
+    public static Microsoft.Xna.Framework.Rectangle GameViewport {
+      get {
+        return StardewValley.Utility.getSafeArea();
+      }
+    }
+  }
 }

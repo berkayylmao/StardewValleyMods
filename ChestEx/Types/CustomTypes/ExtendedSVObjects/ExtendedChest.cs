@@ -22,93 +22,100 @@ using Microsoft.Xna.Framework.Graphics;
 
 using StardewValley.Objects;
 
+using static ChestEx.Types.BaseTypes.ICustomItemGrabMenu;
+
 namespace ChestEx.Types.CustomTypes.ExtendedSVObjects {
-   public class ExtendedChest : Chest {
-      // Private:
-      #region Private
+  public class ExtendedChest : Chest {
+    // Public:
+    #region Public
 
-      private Color _targetColour {
-         get { return this.playerChoiceColor.Value; }
+    // Consts:
+    #region Consts
+
+    public const Int32 CONST_CHEST_SPRITE_SIZE = 16;
+
+    #endregion
+
+    public Color ChestColour {
+      get { return this.playerChoiceColor.Value; }
+      set { this.playerChoiceColor.Value = value; }
+    }
+
+    public Color HingesColour { get; set; }
+
+    public Single ChestScale { get; set; }
+
+    public ItemGrabMenuSourceType ChestType { get; set; }
+
+    public Vector2 ChestSize {
+      get {
+        return new Vector2(
+           ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale,
+           ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale * 12);
       }
+    }
 
-      #endregion
+    // Inaccessible 'Chest + bases' fields exposed through reflection properties:
+    #region Inaccessible 'Chest + bases' fields exposed through reflection properties
 
-      // Public:
-      #region Public
+    public Int32 sv_currentLidFrame {
+      get { return Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value; }
+      set { Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value = value; }
+    }
 
-      // Consts:
-      #region Consts
+    #endregion
 
-      public const Int32 CONST_CHEST_SPRITE_SIZE = 16;
+    public void Draw(SpriteBatch b, Vector2 position, Single alpha = 1.0f) {
+      // bottom half
+      b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+             position,
+             StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet,
+             this.ChestType == ItemGrabMenuSourceType.WoodenChest ? 168 : 232, 16, 32),
+             this.ChestColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
 
-      #endregion
+      // top half
+      b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+             position,
+             StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet,
+             this.sv_currentLidFrame + (this.ChestType == ItemGrabMenuSourceType.WoodenChest ? 38 : 0), 16, 32),
+             this.ChestColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
 
-      public Single ChestScale { get; set; }
+      // bottom 'metal hinge'
+      b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+             new Vector2(position.X, (position.Y + (21 * this.ChestScale))),
+             new Rectangle(0, ((((this.ChestType == ItemGrabMenuSourceType.WoodenChest) ? 168 : 232) / 8) * 32) + 53, 16, 8),
+             this.HingesColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
 
-      public Vector2 ChestSize {
-         get {
-            return new Vector2(
-               ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale,
-               ExtendedChest.CONST_CHEST_SPRITE_SIZE * this.ChestScale * 12);
-         }
-      }
+      // top 'metal hinge'
+      b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
+             position,
+             StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet,
+             this.sv_currentLidFrame + (this.ChestType == ItemGrabMenuSourceType.WoodenChest ? 46 : 8), 16, 32),
+             this.HingesColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
+    }
 
-      // Inaccessible 'Chest + bases' fields exposed through reflection properties:
-      #region Inaccessible 'Chest + bases' fields exposed through reflection properties
+    public void Draw(SpriteBatch b, Rectangle bounds, Single alpha = 1.0f) {
+      this.Draw(b, new Vector2(bounds.X, bounds.Y), alpha);
+    }
 
-      public Int32 sv_currentLidFrame {
-         get { return Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value; }
-         set { Harmony.Traverse.Create(this).Field<Int32>("currentLidFrame").Value = value; }
-      }
+    #endregion
 
-      #endregion
+    // Constructors:
+    #region Constructors
 
-      public void Draw(SpriteBatch b, Vector2 position, Single alpha = 1.0f) {
-         var finalColour = _targetColour * alpha;
+    public ExtendedChest(Single chestScale, Color hingesColour, ItemGrabMenuSourceType chestType) : base(false) {
+      this.ChestScale = chestScale;
+      this.ChestType = chestType;
+      this.HingesColour = hingesColour;
+      this.ParentSheetIndex = this.ChestType == ItemGrabMenuSourceType.WoodenChest ? 130 : 232;
 
-         // bottom half
-         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
-                position,
-                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, 168, 16, 32),
-                finalColour, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
+      this.startingLidFrame.Value = this.ParentSheetIndex + 1;
+      this.resetLidFrame();
+    }
 
-         // top half
-         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
-                position,
-                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, this.sv_currentLidFrame + 38, 16, 32),
-                finalColour * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.9f);
+    public ExtendedChest(Rectangle bounds, ItemGrabMenuSourceType chestType = ItemGrabMenuSourceType.WoodenChest)
+      : this((Single)bounds.Width / ExtendedChest.CONST_CHEST_SPRITE_SIZE, Color.White, chestType) { }
 
-         // botom 'metal hinge'
-         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
-                new Vector2(position.X, (position.Y + (21 * this.ChestScale))),
-                new Rectangle(0, 725, 16, 8),
-                Color.White * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
-
-         // top 'metal hinge'
-         b.Draw(StardewValley.Game1.bigCraftableSpriteSheet,
-                position,
-                StardewValley.Game1.getSourceRectForStandardTileSheet(StardewValley.Game1.bigCraftableSpriteSheet, this.sv_currentLidFrame + 46, 16, 32),
-                Color.White * alpha, 0f, Vector2.Zero, this.ChestScale, SpriteEffects.None, 0.91f);
-      }
-
-      public void Draw(SpriteBatch b, Rectangle bounds, Single alpha = 1.0f) {
-         this.Draw(b, new Vector2(bounds.X, bounds.Y), alpha);
-      }
-
-      #endregion
-
-      // Constructors:
-      #region Constructors
-
-      public ExtendedChest(Single chestScale) : base(false) {
-         this.startingLidFrame.Value = 131;
-         this.resetLidFrame();
-
-         this.ChestScale = chestScale;
-      }
-
-      public ExtendedChest(Rectangle bounds) : this((Single)bounds.Width / ExtendedChest.CONST_CHEST_SPRITE_SIZE) { }
-
-      #endregion
-   }
+    #endregion
+  }
 }

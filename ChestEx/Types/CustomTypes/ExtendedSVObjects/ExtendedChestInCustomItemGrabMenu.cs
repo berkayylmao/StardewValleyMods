@@ -22,65 +22,69 @@ using Microsoft.Xna.Framework.Graphics;
 
 using StardewValley.Objects;
 
+using static ChestEx.Types.BaseTypes.ICustomItemGrabMenu;
+
 namespace ChestEx.Types.CustomTypes.ExtendedSVObjects {
-   public class ExtendedChestInCustomItemGrabMenu : BaseTypes.ISVObjectInCustomItemGrabMenu {
-      // Protected:
-      #region Protected
+  public class ExtendedChestInCustomItemGrabMenu : BaseTypes.ISVObjectInCustomItemGrabMenu {
+    // Protected:
+    #region Protected
 
-      // Overrides:
-      #region Overrides
+    // Overrides:
+    #region Overrides
 
-      protected override void drawObject(SpriteBatch b) {
-         this.MenuChest.Draw(b, this.Bounds, this.textureTintColourCurrent.A / 255.0f);
-      }
+    protected override void drawObject(SpriteBatch b) {
+      this.MenuChest.Draw(b, this.Bounds, this.textureTintColourCurrent.A / 255.0f);
+    }
 
-      protected override void playObjectAnimation() {
-         if (this.MenuChest.sv_currentLidFrame != this.MenuChest.getLastLidFrame())
-            this.MenuChest.sv_currentLidFrame++;
-      }
+    protected override void playObjectAnimation() {
+      if (this.MenuChest.sv_currentLidFrame != this.MenuChest.getLastLidFrame())
+        this.MenuChest.sv_currentLidFrame++;
+    }
 
-      protected override void revertObjectAnimation() {
-         if (this.MenuChest.sv_currentLidFrame != this.MenuChest.startingLidFrame)
-            this.MenuChest.sv_currentLidFrame--;
-      }
+    protected override void revertObjectAnimation() {
+      if (this.MenuChest.sv_currentLidFrame != this.MenuChest.startingLidFrame)
+        this.MenuChest.sv_currentLidFrame--;
+    }
 
-      #endregion
+    #endregion
 
-      #endregion
+    #endregion
 
-      // Public:
-      #region Public
+    // Public:
+    #region Public
 
-      public ExtendedChest MenuChest {
-         get => this.GetSVObjectAs<ExtendedChest>();
-      }
+    public ExtendedChest MenuChest {
+      get => this.GetSVObjectAs<ExtendedChest>();
+    }
 
-      // Overrides:
-      #region Overrides
+    // Overrides:
+    #region Overrides
 
-      public override void OnMouseClick(BaseTypes.ICustomMenu.MouseStateEx mouseState) {
-         if (mouseState.Button == StardewModdingAPI.SButton.MouseLeft)
-            this.onMouseClickEventHandler?.Invoke(this, mouseState);
-      }
+    public override void OnMouseClick(BaseTypes.ICustomMenu.MouseStateEx mouseState) {
+      if (mouseState.Button == StardewModdingAPI.SButton.MouseLeft)
+        this.onMouseClickEventHandler?.Invoke(this, mouseState);
+    }
 
-      #endregion
+    #endregion
 
-      #endregion
+    #endregion
 
-      // Constructors:
-      #region Constructors
+    // Constructors:
+    #region Constructors
 
-      public ExtendedChestInCustomItemGrabMenu(BaseTypes.ICustomItemGrabMenuItem hostMenuItem,
-                                               Rectangle bounds,
-                                               String componentName = "",
-                                               EventHandler<BaseTypes.ICustomMenu.MouseStateEx> onMouseClick = null,
-                                               String hoverText = "",
-                                               BaseTypes.Colours textureTintColours = null)
-         : base(hostMenuItem, bounds, new ExtendedChest(bounds), false, -1.0f, componentName, onMouseClick, hoverText, textureTintColours) {
-         // sync dummy chest
-         this.MenuChest.playerChoiceColor.Value = this.HostMenuItem.HostMenu.GetSourceAs<Chest>().playerChoiceColor.Value;
-      }
+    public ExtendedChestInCustomItemGrabMenu(BaseTypes.ICustomItemGrabMenuItem hostMenuItem,
+                                             Rectangle bounds,
+                                             String componentName = "",
+                                             EventHandler<BaseTypes.ICustomMenu.MouseStateEx> onMouseClick = null,
+                                             String hoverText = "",
+                                             BaseTypes.Colours textureTintColours = null)
+       : base(hostMenuItem, bounds, new ExtendedChest(bounds, hostMenuItem.HostMenu.GetSourceAs<Chest>().ParentSheetIndex == 130 ? ItemGrabMenuSourceType.WoodenChest : ItemGrabMenuSourceType.StoneChest), false, -1.0f, componentName, onMouseClick, hoverText, textureTintColours) {
+      // sync dummy chest
+      this.MenuChest.playerChoiceColor.Value = this.HostMenuItem.HostMenu.GetSourceAs<Chest>().playerChoiceColor.Value;
+      if (this.MenuChest.playerChoiceColor.Value.Equals(Color.Black))
+        this.MenuChest.playerChoiceColor.Value = Color.FromNonPremultiplied(180, 96, 29, 255);
+    }
 
-      #endregion
-   }
+    #endregion
+  }
 }

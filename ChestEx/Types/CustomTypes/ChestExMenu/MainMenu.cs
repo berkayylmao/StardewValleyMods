@@ -27,132 +27,149 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley.Menus;
 
 namespace ChestEx.Types.CustomTypes.ChestExMenu {
-   public class MainMenu : BaseTypes.ICustomItemGrabMenu {
-      // Private:
+  public class MainMenu : BaseTypes.ICustomItemGrabMenu {
+    // Private:
+    #region Private
 
-      // Protected:
+    // Protected:
+    #region Protected
 
-      // Overrides:
+    // Overrides:
+    #region Overrides
 
-      protected override BaseTypes.ICustomItemGrabMenu clone() {
-         return new MainMenu(
-            this.ItemsToGrabMenu.actualInventory, false, true,
-            new InventoryMenu.highlightThisItem(InventoryMenu.highlightAllItems), this.sv_behaviorFunction, null,
-            this.behaviorOnItemGrab, false, true, true, true, true, this.source, this.sv_sourceItem,
-            this.whichSpecialButton, this.context);
+    protected override BaseTypes.ICustomItemGrabMenu clone() {
+      return new MainMenu(
+         this.ItemsToGrabMenu.actualInventory, false, true,
+         new InventoryMenu.highlightThisItem(InventoryMenu.highlightAllItems), this.sv_behaviorFunction, null,
+         this.behaviorOnItemGrab, false, true, true, true, true, this.source, this.sv_sourceItem,
+         this.whichSpecialButton, this.context);
+    }
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    // Public:
+    #region Public
+
+    // Overrides:
+    #region Overrides
+
+    public override void draw(SpriteBatch b) {
+      /*
+       *    
+       *                       __________ /---------------------------------\
+       *                       | Config | |                                 |
+       *                       |  BTN   | |                                 |
+       *       /-------\       ‾‾‾‾‾‾‾‾‾‾ |                                 |
+       *       |       |       __________ |                                 |
+       *       | Dummy |       | Colour | |      this.ItemsToGrabMenu       |
+       *       | Chest |       |  PLT   | |  (config + colour palette too)  |
+       *       |       |       ‾‾‾‾‾‾‾‾‾‾ |                                 |
+       *       \-------/       __________ |                                 |
+       *                       | Colour | |                                 |
+       *                       |  RAW   | |                                 |
+       *                       ‾‾‾‾‾‾‾‾‾‾ |                                 |
+       *   /----------------\             \---------------------------------/
+       *   | ChestsAnywhere |   
+       *   \----------------/                  /----------------------\
+       *                                       |    this.inventory    |
+       *                                       \----------------------/
+       *    
+       *    
+      */
+
+      Action<SpriteBatch> _ = base.draw;
+      _(b);
+    }
+
+    #endregion
+
+    #endregion
+
+    // Constructors:
+    #region Constructors
+
+    public MainMenu(IList<StardewValley.Item> inventory,
+                Boolean reverseGrab,
+                Boolean showReceivingMenu,
+                InventoryMenu.highlightThisItem highlightFunction,
+                ItemGrabMenu.behaviorOnItemSelect behaviorOnItemSelectFunction,
+                String message,
+                ItemGrabMenu.behaviorOnItemSelect behaviorOnItemGrab = null,
+                Boolean snapToBottom = false,
+                Boolean canBeExitedWithKey = false,
+                Boolean playRightClickSound = true,
+                Boolean allowRightClick = true,
+                Boolean showOrganizeButton = false,
+                Int32 source = 0,
+                StardewValley.Item sourceItem = null,
+                Int32 whichSpecialButton = -1,
+                Object context = null)
+       : base(inventory, reverseGrab, showReceivingMenu, highlightFunction, behaviorOnItemSelectFunction, message, behaviorOnItemGrab, snapToBottom, canBeExitedWithKey, playRightClickSound, allowRightClick, showOrganizeButton, source, sourceItem, whichSpecialButton, context) {
+      // recreate menu
+      {
+        var ui_viewport = GlobalVars.UIViewport;
+
+        this.ItemsToGrabMenu = new InventoryMenu(
+           (ui_viewport.Width / 2) - (this.ItemsToGrabMenu.width / 2) + /* chest icon padding */ (this.ItemsToGrabMenu.height / 8),
+           Math.Max(64, (ui_viewport.Height / 2) - Convert.ToInt32(this.ItemsToGrabMenu.height * StardewValley.Game1.options.uiScale)),
+           false, this.ItemsToGrabMenu.actualInventory,
+           this.ItemsToGrabMenu.highlightMethod, this.ItemsToGrabMenu.capacity, this.ItemsToGrabMenu.rows,
+           this.ItemsToGrabMenu.horizontalGap, this.ItemsToGrabMenu.verticalGap, this.ItemsToGrabMenu.drawSlots);
+        this.SourceInventoryOptions.Bounds = this.ItemsToGrabMenu.GetDialogueBoxRectangle();
+
+        this.inventory = new InventoryMenu(
+           this.SourceInventoryOptions.Bounds.X + (this.SourceInventoryOptions.Bounds.Width / 2) - (this.inventory.width / 2),
+           Math.Min(ui_viewport.Height - this.inventory.height - 32, (this.SourceInventoryOptions.Bounds.Y + this.SourceInventoryOptions.Bounds.Height) + 32),
+           false, null,
+           this.inventory.highlightMethod, this.inventory.capacity, this.inventory.rows,
+           this.inventory.horizontalGap, this.inventory.verticalGap, this.inventory.drawSlots);
+        this.PlayerInventoryOptions.Bounds = this.inventory.GetDialogueBoxRectangle();
+
+        this.ItemsToGrabMenu.populateClickableComponentList();
+        for (Int32 i = 0; i < this.ItemsToGrabMenu.inventory.Count; i++) {
+          if (this.ItemsToGrabMenu.inventory[i] != null) {
+            this.ItemsToGrabMenu.inventory[i].myID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+            this.ItemsToGrabMenu.inventory[i].upNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+            this.ItemsToGrabMenu.inventory[i].rightNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+            this.ItemsToGrabMenu.inventory[i].downNeighborID = ClickableComponent.CUSTOM_SNAP_BEHAVIOR;
+            this.ItemsToGrabMenu.inventory[i].leftNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
+            this.ItemsToGrabMenu.inventory[i].fullyImmutable = true;
+          }
+        }
+
+        this.SetBounds(
+           this.SourceInventoryOptions.Bounds.X,
+           this.SourceInventoryOptions.Bounds.Y,
+           this.SourceInventoryOptions.Bounds.Width,
+           this.SourceInventoryOptions.Bounds.Height
+              + this.SourceInventoryOptions.Bounds.Y + 32
+              + this.PlayerInventoryOptions.Bounds.Height);
+
+        // handle organization buttons
+        {
+          this.createOrganizationButtons(false, false, false);
+          this.okButton = this.trashCan = null;
+          if (!(this.dropItemInvisibleButton is null)) {
+            this.dropItemInvisibleButton.bounds = new Rectangle(
+               this.PlayerInventoryOptions.Bounds.X + (this.PlayerInventoryOptions.Bounds.Width / 2),
+               this.PlayerInventoryOptions.Bounds.Y - ((this.PlayerInventoryOptions.Bounds.Y - (this.SourceInventoryOptions.Bounds.Y + this.SourceInventoryOptions.Bounds.Height)) / 2),
+               64, 64);
+          }
+        }
+
+        this.populateClickableComponentList();
+        if (StardewValley.Game1.options.SnappyMenus)
+          this.snapToDefaultClickableComponent();
+        this.SetupBorderNeighbors();
       }
 
-      // Public:
+      this.MenuItems.Add(new ChestConfigPanel(this));
+    }
 
-      // Overrides:
-
-      public override void draw(SpriteBatch b) {
-         /*
-          *    
-          *                             /---------------------------------\
-          *                             |                     | ConfigBTN |
-          *                             |                     \-----------|
-          *       /-------\             |                                 |
-          *       |       |             |                                 |
-          *       | Dummy |             |      this.ItemsToGrabMenu       |
-          *       | Chest |             |  (config + colour palette too)  |
-          *       |       |             |                                 |
-          *       \-------/             |                                 |
-          *                             \---------------------------------/
-          *   /----------------\   
-          *   | ChestsAnywhere |   
-          *   \----------------/              /----------------------\
-          *                                   |    this.inventory    |
-          *                                   \----------------------/
-          *    
-          *    
-         */
-
-         Action<SpriteBatch> _ = base.draw;
-         _(b);
-      }
-
-      // Constructors:
-
-      // TODO: Add custom menu background colour support
-      public MainMenu(IList<StardewValley.Item> inventory,
-                  Boolean reverseGrab,
-                  Boolean showReceivingMenu,
-                  InventoryMenu.highlightThisItem highlightFunction,
-                  ItemGrabMenu.behaviorOnItemSelect behaviorOnItemSelectFunction,
-                  String message,
-                  ItemGrabMenu.behaviorOnItemSelect behaviorOnItemGrab = null,
-                  Boolean snapToBottom = false,
-                  Boolean canBeExitedWithKey = false,
-                  Boolean playRightClickSound = true,
-                  Boolean allowRightClick = true,
-                  Boolean showOrganizeButton = false,
-                  Int32 source = 0,
-                  StardewValley.Item sourceItem = null,
-                  Int32 whichSpecialButton = -1,
-                  Object context = null)
-         : base(inventory, reverseGrab, showReceivingMenu, highlightFunction, behaviorOnItemSelectFunction, message, behaviorOnItemGrab, snapToBottom, canBeExitedWithKey, playRightClickSound, allowRightClick, showOrganizeButton, source, sourceItem, whichSpecialButton, context) {
-         // recreate menu
-         {
-            var game_viewport = GlobalVars.GameViewport;
-
-            this.inventory = new InventoryMenu(
-               game_viewport.Width - this.inventory.width - Convert.ToInt32(game_viewport.Width / (12.0f * StardewValley.Game1.options.zoomLevel)),
-               game_viewport.Height - this.inventory.height - (game_viewport.Height / Convert.ToInt32(8.0f * StardewValley.Game1.options.zoomLevel)),
-               false, null,
-               this.inventory.highlightMethod, this.inventory.capacity, this.inventory.rows,
-               this.inventory.horizontalGap, this.inventory.verticalGap, this.inventory.drawSlots);
-
-            this.ItemsToGrabMenu = new InventoryMenu(
-               game_viewport.Width - this.ItemsToGrabMenu.width - Convert.ToInt32(game_viewport.Width / (12.0f * StardewValley.Game1.options.zoomLevel)),
-               game_viewport.Height / Convert.ToInt32(8.0f * StardewValley.Game1.options.zoomLevel),
-               false, this.ItemsToGrabMenu.actualInventory,
-               this.ItemsToGrabMenu.highlightMethod, this.ItemsToGrabMenu.capacity, this.ItemsToGrabMenu.rows,
-               this.ItemsToGrabMenu.horizontalGap, this.ItemsToGrabMenu.verticalGap, this.ItemsToGrabMenu.drawSlots);
-
-            this.ItemsToGrabMenu.populateClickableComponentList();
-            for (Int32 i = 0; i < this.ItemsToGrabMenu.inventory.Count; i++) {
-               if (this.ItemsToGrabMenu.inventory[i] != null) {
-                  this.ItemsToGrabMenu.inventory[i].myID += ItemGrabMenu.region_itemsToGrabMenuModifier;
-                  this.ItemsToGrabMenu.inventory[i].upNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
-                  this.ItemsToGrabMenu.inventory[i].rightNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
-                  this.ItemsToGrabMenu.inventory[i].downNeighborID = ClickableComponent.CUSTOM_SNAP_BEHAVIOR;
-                  this.ItemsToGrabMenu.inventory[i].leftNeighborID += ItemGrabMenu.region_itemsToGrabMenuModifier;
-                  this.ItemsToGrabMenu.inventory[i].fullyImmutable = true;
-               }
-            }
-
-            this.PlayerInventoryOptions.Bounds = this.inventory.GetRectangleForDialogueBox();
-            this.SourceInventoryOptions.Bounds = this.ItemsToGrabMenu.GetRectangleForDialogueBox();
-
-            this.SetBounds(
-               this.SourceInventoryOptions.Bounds.X,
-               this.SourceInventoryOptions.Bounds.Y,
-               this.SourceInventoryOptions.Bounds.Width,
-               this.SourceInventoryOptions.Bounds.Height
-                  + (this.PlayerInventoryOptions.Bounds.Y - (this.SourceInventoryOptions.Bounds.Y + this.SourceInventoryOptions.Bounds.Height))
-                  + this.PlayerInventoryOptions.Bounds.Height);
-
-            // handle organization buttons
-            {
-               this.createOrganizationButtons(false, false, false);
-               this.okButton = this.trashCan = null;
-               if (!(this.dropItemInvisibleButton is null)) {
-                  this.dropItemInvisibleButton.bounds = new Rectangle(
-                     this.PlayerInventoryOptions.Bounds.X + (this.PlayerInventoryOptions.Bounds.Width / 2),
-                     this.PlayerInventoryOptions.Bounds.Y - ((this.PlayerInventoryOptions.Bounds.Y - (this.SourceInventoryOptions.Bounds.Y + this.SourceInventoryOptions.Bounds.Height)) / 2),
-                     64, 64);
-               }
-            }
-
-            this.populateClickableComponentList();
-            if (StardewValley.Game1.options.SnappyMenus)
-               this.snapToDefaultClickableComponent();
-            this.SetupBorderNeighbors();
-         }
-
-         this.MenuItems.Add(new ConfigPanel(this));
-         this.MenuItems.Add(new ChestColouringPanel(this));
-      }
-   }
+    #endregion
+  }
 }
