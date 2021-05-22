@@ -92,8 +92,8 @@ namespace ShipAnything {
         [HarmonyPostfix]
         [UsedImplicitly]
         // ReSharper disable once InconsistentNaming
-        public static void postfix_parseItems(IList<Item>         items, ref List<List<Item>> ___categoryItems, ref List<Int32> categoryTotals,
-                                              ref List<MoneyDial> categoryDials, ref Dictionary<Item, Int32> itemValues) {
+        public static void postfix_parseItems(IList<Item>         items, ref List<List<Item>> ___categoryItems, ref List<Int32> ___categoryTotals,
+                                              ref List<MoneyDial> ___categoryDials, ref Dictionary<Item, Int32> ___itemValues) {
           Int32 gained_money = 0;
           foreach (Item item in items) {
             if (item is StardewValley.Object) continue;
@@ -101,16 +101,16 @@ namespace ShipAnything {
 
             ___categoryItems[4].Add(obj_ex); // Add item to misc.
             ___categoryItems[5].Add(obj_ex); // Add item to total
-            categoryTotals[4]                    += obj_ex.Price;
-            categoryTotals[5]                    += obj_ex.Price;
-            itemValues[obj_ex]                   =  obj_ex.Price;
-            categoryDials[4].previousTargetValue =  categoryDials[4].currentValue = categoryTotals[4];
-            gained_money                         += obj_ex.Price;
-            Game1.stats.itemsShipped             += 1;
+            ___categoryTotals[4]                    += obj_ex.Price;
+            ___categoryTotals[5]                    += obj_ex.Price;
+            ___itemValues[obj_ex]                   =  obj_ex.Price;
+            ___categoryDials[4].previousTargetValue =  ___categoryDials[4].currentValue = ___categoryTotals[4];
+            gained_money                            += obj_ex.Price;
+            Game1.stats.itemsShipped                += 1;
           }
-          categoryDials[5].currentValue = categoryTotals[5];
+          ___categoryDials[5].currentValue = ___categoryTotals[5];
           if (Game1.IsMasterGame) Game1.player.Money += gained_money;
-          Game1.setRichPresence("earnings", categoryTotals[5]);
+          Game1.setRichPresence("earnings", ___categoryTotals[5]);
         }
       }
     }
@@ -118,11 +118,14 @@ namespace ShipAnything {
     public override void Entry(IModHelper helper) {
       var harmony = HarmonyInstance.Create("mod.berkayylmao.ShipAnything");
       harmony.Patch(AccessTools.Method(typeof(StardewValley.Object), "canBeShipped"),
-                    new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVObject), "prefix_canBeShipped")));
+                    new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVObject), "prefix_canBeShipped"))
+                   );
       harmony.Patch(AccessTools.Method(typeof(Utility), "highlightShippableObjects"),
-                    new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVUtility), "prefix_highlightShippableObjects")));
+                    new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVUtility), "prefix_highlightShippableObjects"))
+                   );
       harmony.Patch(AccessTools.Method(typeof(StardewValley.Menus.ShippingMenu), "parseItems"),
-                    postfix: new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVShippingMenu), "postfix_parseItems")));
+                    postfix: new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVShippingMenu), "postfix_parseItems"))
+                   );
     }
   }
 }
