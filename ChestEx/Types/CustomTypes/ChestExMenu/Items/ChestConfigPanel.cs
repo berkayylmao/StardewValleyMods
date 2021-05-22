@@ -1,117 +1,131 @@
-﻿//
-//    Copyright (C) 2021 Berkay Yigit <berkaytgy@gmail.com>
-//
+﻿#region License
+
+// clang-format off
+// 
+//    ChestEx (StardewValleyMods)
+//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+// 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
 //    by the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
-//
+// 
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU Affero General Public License for more details.
-//
+// 
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
+// 
+// clang-format on
+
+#endregion
 
 using System;
 
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
+using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using StardewValley.Objects;
+using StardewValley;
+
+using Object = System.Object;
 
 namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
-  public partial class ChestConfigPanel : ICustomItemGrabMenuItem {
+  public partial class ChestConfigPanel : CustomItemGrabMenuItem {
     // Private:
 
-    private ColourPalette _colourPalette;
+    private ExtendedChestInCustomItemGrabMenu chestAsPanelButton;
+    private ColourPalette                     colourPalette;
+    private ChestSettings                     chestSettings;
 
-    private Boolean _isShowingColourEditors;
+    private Boolean isShowingConfigPanel;
 
     // Component event handlers:
-    #region Component event handlers
+  #region Component event handlers
 
-    private void _componentOnClick(Object sender, ICustomMenu.MouseStateEx mouseState) {
-      switch ((sender as BaseTypes.ICustomItemGrabMenuItem.BasicComponent).Name) {
+    private void _componentOnClick(Object sender, CustomMenu.MouseStateEx mouseState) {
+      switch ((sender as BasicComponent)?.mName) {
         case "openPanelBTN":
-          _isShowingColourEditors.Flip();
-          _colourPalette.SetVisible(_isShowingColourEditors);
-          this.HostMenu.SourceInventoryOptions.SetVisible(!_isShowingColourEditors);
-          break;
-        case "palette":
-          var pos_as_point = mouseState.Pos.AsXNAPoint();
-          var colour = _colourPalette.GetColourAt(pos_as_point.X, pos_as_point.Y);
+          this.isShowingConfigPanel.Flip();
+          this.colourPalette.SetVisible(this.isShowingConfigPanel);
+          this.chestSettings.SetVisible(this.isShowingConfigPanel);
+          this.mHostMenu.mPlayerInventoryOptions.SetVisible(!this.isShowingConfigPanel);
 
-          if (mouseState.Button == StardewModdingAPI.SButton.MouseLeft) {
-            this.ChestAsPanelButton.MenuChest.ChestColour = colour;
-            this.HostMenu.GetSourceAs<Chest>().playerChoiceColor.Value = colour;
-            this.HostMenu.SourceInventoryOptions.BackgroundColour = colour;
-          } else {
-            this.ChestAsPanelButton.MenuChest.HingesColour = colour;
-          }
           break;
       }
     }
 
-    #endregion
+  #endregion
 
     // Public:
-
-    public ExtendedSVObjects.ExtendedChestInCustomItemGrabMenu ChestAsPanelButton;
 
     // Overrides:
 
     public override void Draw(SpriteBatch b) {
-      if (!this.IsVisible)
-        return;
+      if (!this.mIsVisible) return;
 
-      if (_isShowingColourEditors) {
-        var wrap_rectangle_ItemsToGrabMenu = this.HostMenu.ItemsToGrabMenu.GetDialogueBoxRectangle();
-        StardewValley.Game1.drawDialogueBox(
-           wrap_rectangle_ItemsToGrabMenu.X, wrap_rectangle_ItemsToGrabMenu.Y,
-           wrap_rectangle_ItemsToGrabMenu.Width, wrap_rectangle_ItemsToGrabMenu.Height,
-           false, true,
-           r: this.Colours.BackgroundColour.R,
-           g: this.Colours.BackgroundColour.G,
-           b: this.Colours.BackgroundColour.B);
+      if (this.isShowingConfigPanel) {
+        Rectangle wrap_rect = this.mHostMenu.inventory.GetDialogueBoxRectangle();
+        Game1.drawDialogueBox(wrap_rect.X,
+                              wrap_rect.Y,
+                              wrap_rect.Width,
+                              wrap_rect.Height,
+                              false,
+                              true,
+                              r: this.mColours.mBackgroundColour.R,
+                              g: this.mColours.mBackgroundColour.G,
+                              b: this.mColours.mBackgroundColour.B);
       }
 
-      base.Draw(b);
+      this.mComponents.ForEach(c => {
+        if (c.mIsVisible) c.Draw(b);
+      });
     }
+
+    public override void SetVisible(Boolean isVisible) { this.mIsVisible = isVisible; }
 
     // Constructors:
 
-    public ChestConfigPanel(ICustomItemGrabMenu hostMenu) : base(hostMenu, GlobalVars.UIViewport, true, Colours.Default) {
-      _isShowingColourEditors = false;
+    public ChestConfigPanel(CustomItemGrabMenu hostMenu) : base(hostMenu, GlobalVars.gUIViewport, true, Colours.GenerateFrom(Color.FromNonPremultiplied(50, 60, 70, 255))) {
+      Rectangle source_menu_bounds         = this.mHostMenu.mSourceInventoryOptions.mBounds;
+      Rectangle player_menu_content_bounds = this.mHostMenu.inventory.GetContentRectangle();
 
-      var source_menu_bounds = this.HostMenu.SourceInventoryOptions.Bounds;
-      var menu_chest_size = new Point(
-            source_menu_bounds.Height / 4,
-            source_menu_bounds.Height / 2
-            );
+      this.chestAsPanelButton = new ExtendedChestInCustomItemGrabMenu(this,
+                                                                      new Rectangle(source_menu_bounds.X - 64 - 28,
+                                                                                    source_menu_bounds.Y + (source_menu_bounds.Height / 2 - 64 / 2),
+                                                                                    64,
+                                                                                    64),
+                                                                      "openPanelBTN",
+                                                                      this._componentOnClick,
+                                                                      "Toggle configuration panel",
+                                                                      Colours.gTurnTranslucentOnAction);
+      this.chestAsPanelButton.SetVisible(true);
 
-      this.ChestAsPanelButton = new ExtendedSVObjects.ExtendedChestInCustomItemGrabMenu(this,
-         new Rectangle(
-            source_menu_bounds.X - menu_chest_size.X - 24,
-            source_menu_bounds.Y + ((source_menu_bounds.Height / 2) - (menu_chest_size.Y / 2)),
-            menu_chest_size.X,
-            menu_chest_size.Y),
-         "openPanelBTN", _componentOnClick, "Toggle configuration panel", BaseTypes.Colours.TurnTranslucentOnAction);
+      this.colourPalette = new ColourPalette(this,
+                                             new Rectangle(player_menu_content_bounds.X,
+                                                           player_menu_content_bounds.Y,
+                                                           ColourPalette.ColourPicker.CONST_X + player_menu_content_bounds.Height + ColourPalette.CONST_BORDER_WIDTH,
+                                                           player_menu_content_bounds.Height),
+                                             this.chestAsPanelButton.mMenuChest,
+                                             "palette",
+                                             this._componentOnClick);
+      this.colourPalette.SetVisible(false);
 
-      _colourPalette = new ColourPalette(this, this.HostMenu.ItemsToGrabMenu.GetContentRectangle(), this.ChestAsPanelButton.MenuChest, "palette", _componentOnClick);
-      _colourPalette.SetVisible(false);
+      this.chestSettings = new ChestSettings(this,
+                                             new Rectangle(player_menu_content_bounds.X + this.colourPalette.mBounds.Width,
+                                                           player_menu_content_bounds.Y,
+                                                           player_menu_content_bounds.Width - this.colourPalette.mBounds.Width,
+                                                           player_menu_content_bounds.Height));
+      this.chestSettings.SetVisible(false);
 
-      this.Colours = new Colours(Color.FromNonPremultiplied(50, 60, 70, 255), Color.White, Color.White, Color.White);
-
-      this.Components.Add(_colourPalette);
-      this.Components.Add(this.ChestAsPanelButton);
-
-      this.HostMenu.SourceInventoryOptions.BackgroundColour = this.ChestAsPanelButton.MenuChest.playerChoiceColor.Value;
+      this.mComponents.Add(this.chestSettings);
+      this.mComponents.Add(this.colourPalette);
+      this.mComponents.Add(this.chestAsPanelButton);
     }
   }
 }
