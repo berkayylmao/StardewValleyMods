@@ -242,7 +242,6 @@ namespace ChestEx {
           [SuppressMessage("ReSharper", "InconsistentNaming")]
           private static void postfixOpenMenu(Chest ___Chest, Object ___Context, ref IClickableMenu __result) {
             if (___Chest.SpecialChestType != Chest.SpecialChestTypes.None || ___Chest.playerChest is null || !___Chest.playerChest.Value) return;
-            var type = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
 
             __result?.exitThisMenu(false);
             __result = new MainMenu(___Chest.GetItemsForPlayer(Game1.player.UniqueMultiplayerID),
