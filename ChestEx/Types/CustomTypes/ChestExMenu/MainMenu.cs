@@ -133,7 +133,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
 
       Rectangle player_menu_bounds = this.mPlayerInventoryOptions.mBounds;
 
-      if (this.drawBG) b.Draw(Game1.fadeToBlackRect, GlobalVars.gGameViewport, Color.Black * 0.65f);
+      if (this.drawBG) b.Draw(Game1.fadeToBlackRect, GlobalVars.gUIViewport, Color.Black * 0.5f);
 
       // draw backpack icon next to player inventory
       var backpack_size = new Point(player_menu_bounds.Height / 4, player_menu_bounds.Height / 4);

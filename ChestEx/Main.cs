@@ -240,64 +240,27 @@ namespace ChestEx {
           [HarmonyTranspiler]
           [UsedImplicitly]
           [SuppressMessage("ReSharper", "InconsistentNaming")]
-          private static IEnumerable<CodeInstruction> transpilerOpenMenu(IEnumerable<CodeInstruction> instructions) {
-            ConstructorInfo org_ctor = AccessTools.Constructor(typeof(ItemGrabMenu),
-                                                               new[] {
-                                                                 typeof(IList<Item>),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(InventoryMenu.highlightThisItem),
-                                                                 typeof(ItemGrabMenu.behaviorOnItemSelect),
-                                                                 typeof(String),
-                                                                 typeof(ItemGrabMenu.behaviorOnItemSelect),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Int32),
-                                                                 typeof(Item),
-                                                                 typeof(Int32),
-                                                                 typeof(Object)
-                                                               });
-            ConstructorInfo new_ctor = AccessTools.Constructor(typeof(MainMenu),
-                                                               new[] {
-                                                                 typeof(IList<Item>),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(InventoryMenu.highlightThisItem),
-                                                                 typeof(ItemGrabMenu.behaviorOnItemSelect),
-                                                                 typeof(String),
-                                                                 typeof(ItemGrabMenu.behaviorOnItemSelect),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Boolean),
-                                                                 typeof(Int32),
-                                                                 typeof(Item),
-                                                                 typeof(Int32),
-                                                                 typeof(Object)
-                                                               });
-            Boolean patched = false;
+          private static void postfixOpenMenu(Chest ___Chest, Object ___Context, ref IClickableMenu __result) {
+            if (___Chest.SpecialChestType != Chest.SpecialChestTypes.None || ___Chest.playerChest is null || !___Chest.playerChest.Value) return;
+            var type = Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
 
-            foreach (CodeInstruction instruction in instructions) {
-              if (instruction.opcode == OpCodes.Newobj && (ConstructorInfo)instruction.operand == org_ctor) {
-                yield return new CodeInstruction(OpCodes.Newobj, new_ctor);
-
-                patched = true;
-                continue;
-              }
-
-              yield return instruction;
-            }
-
-            if (patched)
-              GlobalVars.gSMAPIMonitor.Log("Successfully patched 'ChestsAnywhere.ChestContainer.OpenMenu'.", LogLevel.Info);
-            else {
-              GlobalVars.gSMAPIMonitor.Log("Could not patch 'ChestsAnywhere.ChestContainer.OpenMenu' to redirect 'ItemGrabMenu.ctor' to 'ChestExMenu.MainMenu.ctor'!",
-                                           LogLevel.Error);
-            }
+            __result?.exitThisMenu(false);
+            __result = new MainMenu(___Chest.GetItemsForPlayer(Game1.player.UniqueMultiplayerID),
+                                    false,
+                                    true,
+                                    (__result as ItemGrabMenu)?.inventory.highlightMethod,
+                                    Traverse.Create(__result).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction")?.Value,
+                                    null,
+                                    (__result as ItemGrabMenu)?.behaviorOnItemGrab,
+                                    false,
+                                    true,
+                                    true,
+                                    true,
+                                    true,
+                                    1,
+                                    ___Chest,
+                                    -1,
+                                    ___Context);
           }
         }
 
@@ -517,9 +480,8 @@ namespace ChestEx {
                            LogLevel.Warn);
 
           harmony.Patch(AccessTools.Method(Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere"), "OpenMenu"),
-                        new HarmonyMethod(typeof(ChestContainer).GetMethod("prefixOpenMenu")),
-                        null,
-                        new HarmonyMethod(typeof(ChestContainer).GetMethod("TranspilerPatchFor_OpenMenu")));
+                        new HarmonyMethod(AccessTools.Method(typeof(ChestContainer), "prefixOpenMenu")),
+                        new HarmonyMethod(AccessTools.Method(typeof(ChestContainer), "postfixOpenMenu")));
           harmony.Patch(AccessTools.Method(Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere"), "ReinitializeComponents"),
                         transpiler: new HarmonyMethod(AccessTools.Method(typeof(BaseChestOverlay), "transpilerReinitializeComponents")));
           harmony.Patch(AccessTools.Method(Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Menus.Overlays.BaseChestOverlay, ChestsAnywhere"), "DrawUi"),
