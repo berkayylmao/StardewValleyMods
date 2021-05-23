@@ -32,6 +32,8 @@ using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
 using Harmony;
 
+using JetBrains.Annotations;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -342,6 +344,16 @@ namespace ChestEx.Types.BaseTypes {
         this.height            = value.Height;
       }
     }
+
+    /// <summary>
+    /// The <see cref="ItemGrabMenu"/>'s bound calculated by custom properties.
+    /// </summary>
+    [UsedImplicitly]
+    public Rectangle mRealBounds =>
+      new(Math.Min(this.mSourceInventoryOptions.mBounds.X, this.mPlayerInventoryOptions.mBounds.X), 
+          this.mSourceInventoryOptions.mBounds.Y,
+          Math.Max(this.mSourceInventoryOptions.mBounds.Width, this.mPlayerInventoryOptions.mBounds.Width), 
+          this.mPlayerInventoryOptions.mBounds.Bottom - this.mSourceInventoryOptions.mBounds.Y);
 
     public Boolean mIsVisible { get; protected set; }
 

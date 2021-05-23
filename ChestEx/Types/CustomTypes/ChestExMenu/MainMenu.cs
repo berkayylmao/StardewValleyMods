@@ -188,11 +188,9 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
 
       this.ItemsToGrabMenu = new InventoryMenu(ui_viewport.Width / 2
                                                - this.ItemsToGrabMenu.width / 2
-                                               +
-                                               /* chest icon padding */ this.ItemsToGrabMenu.width / 24
-                                               -
-                                               /* organize buttons padding */ (64 + 16),
-                                               Math.Max(72, ui_viewport.Height / 2 - this.ItemsToGrabMenu.height),
+                                               /* chest icon padding */ + this.ItemsToGrabMenu.width / 24
+                                               /* organize buttons padding */ - (64 + 16),
+                                               Math.Max(GlobalVars.gIsChestsAnywhereLoaded ? 96 : 48, (Int32)(ui_viewport.Height * 0.5f - this.ItemsToGrabMenu.height * 0.75f)),
                                                false,
                                                this.ItemsToGrabMenu.actualInventory,
                                                this.ItemsToGrabMenu.highlightMethod,

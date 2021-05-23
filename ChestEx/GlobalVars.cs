@@ -69,5 +69,14 @@ namespace ChestEx {
     public static IMonitor   gSMAPIMonitor;
 
   #endregion
+
+  #region Compatibilities
+
+    public static Boolean gIgnoreInput = false;
+
+    public static Boolean gIsAutomateLoaded       = false;
+    public static Boolean gIsChestsAnywhereLoaded = false;
+
+  #endregion
   }
 }
