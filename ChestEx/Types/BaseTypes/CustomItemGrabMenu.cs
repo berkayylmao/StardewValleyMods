@@ -679,19 +679,9 @@ namespace ChestEx.Types.BaseTypes {
     public struct InventoryMenuOptions {
       private readonly Action<Boolean> fnSetVisibleExtra;
 
-      public Color mBackgroundColour { get; set; }
-
-      public Rectangle mBounds { get; set; }
-
-      public Boolean mIsVisible { get; private set; }
-
-      public Rectangle mSafeContentRegion {
-        get {
-          Rectangle bounds = this.mBounds;
-
-          return new Rectangle(bounds.X + 36, bounds.Y + spaceToClearTopBorder + 4, bounds.Width - borderWidth - 32, bounds.Height - spaceToClearTopBorder - 40);
-        }
-      }
+      public Color     mBackgroundColour;
+      public Rectangle mBounds;
+      public Boolean   mIsVisible;
 
       public void SetVisible(Boolean isVisible) {
         this.mIsVisible = isVisible;
