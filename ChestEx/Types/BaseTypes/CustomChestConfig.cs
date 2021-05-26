@@ -24,21 +24,29 @@
 
 using System;
 
+using ChestEx.LanguageExtensions;
+
 using Microsoft.Xna.Framework;
 
-namespace ChestEx {
+using StardewValley.Objects;
+
+namespace ChestEx.Types.BaseTypes {
   public class CustomChestConfig {
     public const String CONST_MODDATA_PREFIX = "berkayylmao.ChestEx";
-    public const String CONST_NAME_KEY       = "Name";
-    public const String CONST_DESC_KEY       = "Description";
-    public const String CONST_HINGES_KEY     = "HingesColour";
 
-    public const String CONST_CHESTSANYWHERE_NAME_COMPATIBILITY_KEY = "Pathoschild.ChestsAnywhere/Name";
+    public const String CONST_NAME_KEY   = "Name";
+    public const String CONST_DESC_KEY   = "Description";
+    public const String CONST_HINGES_KEY = "HingesColour";
 
-    public const String CONST_DEFAULT_NAME = "Chest";
+    public const String CONST_DEFAULT_NAME   = "Chest";
+    public const String CONST_DEFAULT_DESC   = "";
+    public const String CONST_DEFAULT_HINGES = "000000";
+
+    public const String CONST_NAME_CHESTSANYWHERE_KEY = "Pathoschild.ChestsAnywhere/Name";
 
     public String mName         { get; set; } = CONST_DEFAULT_NAME;
-    public String mDescription  { get; set; } = String.Empty;
-    public Color  mHingesColour { get; set; } = Color.White;
+    public String mDescription  { get; set; } = CONST_DEFAULT_DESC;
+    public Color  mHingesColour { get; set; } = Color.Black;
+
   }
 }

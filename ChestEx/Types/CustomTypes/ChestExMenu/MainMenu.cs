@@ -130,10 +130,9 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
       */
 
       if (!this.mIsVisible) return;
+      if (this.drawBG) b.Draw(Game1.fadeToBlackRect, GlobalVars.gUIViewport, Color.Black * 0.375f);
 
       Rectangle player_menu_bounds = this.mPlayerInventoryOptions.mBounds;
-
-      if (this.drawBG) b.Draw(Game1.fadeToBlackRect, GlobalVars.gUIViewport, Color.Black * 0.5f);
 
       // draw backpack icon next to player inventory
       var backpack_size = new Point(player_menu_bounds.Height / 4, player_menu_bounds.Height / 4);
@@ -190,7 +189,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
                                                - this.ItemsToGrabMenu.width / 2
                                                /* chest icon padding */ + this.ItemsToGrabMenu.width / 24
                                                /* organize buttons padding */ - (64 + 16),
-                                               Math.Max(GlobalVars.gIsChestsAnywhereLoaded ? 96 : 48, (Int32)(ui_viewport.Height * 0.5f - this.ItemsToGrabMenu.height * 0.75f)),
+                                               Math.Max((GlobalVars.gIsChestsAnywhereLoaded ? 82 : 48) + (GlobalVars.gIsExpandedStorageLoaded ? 52: 0), (Int32)(ui_viewport.Height * 0.5f - this.ItemsToGrabMenu.height * 0.75f)),
                                                false,
                                                this.ItemsToGrabMenu.actualInventory,
                                                this.ItemsToGrabMenu.highlightMethod,
@@ -202,6 +201,10 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
       this.ItemsToGrabMenu.populateClickableComponentList();
       this.mSourceInventoryOptions.mBounds = this.ItemsToGrabMenu.GetDialogueBoxRectangle();
       this.mSourceInventoryOptions.SetVisible(this.mSourceInventoryOptions.mIsVisible);
+      if (GlobalVars.gIsExpandedStorageLoaded) {
+        this.mSourceInventoryOptions.mBounds.Y -= 52;
+        this.mSourceInventoryOptions.mBounds.Height += 52;
+      }
 
       foreach (ClickableComponent cc in this.ItemsToGrabMenu.inventory.Where(cc => cc != null)) {
         cc.myID            += region_itemsToGrabMenuModifier;
@@ -212,8 +215,9 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
         cc.fullyImmutable  =  true;
       }
 
+      Int32 compatibility_y_shift = GlobalVars.gIsExpandedStorageLoaded ? 48 : 0;
       this.inventory = new InventoryMenu(this.mSourceInventoryOptions.mBounds.Center.X - this.inventory.width / 2 - 4,
-                                         Math.Min(ui_viewport.Height - this.inventory.height - 32, this.mSourceInventoryOptions.mBounds.Bottom + 32),
+                                         Math.Min(ui_viewport.Height - this.inventory.height - 32, this.mSourceInventoryOptions.mBounds.Bottom + 32 + compatibility_y_shift),
                                          false,
                                          null,
                                          this.inventory.highlightMethod,

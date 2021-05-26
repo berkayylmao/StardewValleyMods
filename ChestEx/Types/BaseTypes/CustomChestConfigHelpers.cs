@@ -30,24 +30,8 @@ using Microsoft.Xna.Framework;
 
 using StardewValley.Objects;
 
-namespace ChestEx {
+namespace ChestEx.Types.BaseTypes {
   public static class CustomChestConfigHelpers {
-    public static CustomChestConfig GetCustomConfig(this Chest chest) {
-      var config = new CustomChestConfig {
-        mName = chest.GetCustomConfigName(), mDescription = chest.GetCustomConfigDescription(), mHingesColour = chest.GetCustomConfigHingesColour()
-      };
-
-      chest.SetCustomConfig(config);
-
-      return config;
-    }
-
-    public static void SetCustomConfig(this Chest chest, CustomChestConfig config) {
-      chest.SetCustomConfigName(config.mName);
-      chest.SetCustomConfigDescription(config.mDescription);
-      chest.SetCustomConfigHingesColour(config.mHingesColour);
-    }
-
     public static String GetCustomConfigName(this Chest chest) {
       String return_text = CustomChestConfig.CONST_DEFAULT_NAME;
 
@@ -55,15 +39,14 @@ namespace ChestEx {
         if (!String.IsNullOrWhiteSpace(name))
           return_text = name;
 
-      if (chest.modData.TryGetValue(CustomChestConfig.CONST_CHESTSANYWHERE_NAME_COMPATIBILITY_KEY, out String chestsanywhere_name))
+      if (chest.modData.TryGetValue(CustomChestConfig.CONST_NAME_CHESTSANYWHERE_KEY, out String chestsanywhere_name))
         if (!String.IsNullOrWhiteSpace(chestsanywhere_name))
           return_text = chestsanywhere_name;
 
       return return_text;
     }
-
     public static String GetCustomConfigDescription(this Chest chest) {
-      String return_text = String.Empty;
+      String return_text = CustomChestConfig.CONST_DEFAULT_DESC;
 
       if (chest.modData.TryGetValue($"{CustomChestConfig.CONST_MODDATA_PREFIX}/{CustomChestConfig.CONST_DESC_KEY}", out String desc))
         if (!String.IsNullOrWhiteSpace(desc))
@@ -71,9 +54,8 @@ namespace ChestEx {
 
       return return_text;
     }
-
     public static Color GetCustomConfigHingesColour(this Chest chest) {
-      Color return_colour = Color.Black;
+      Color return_colour = CustomChestConfig.CONST_DEFAULT_HINGES.AsXNAColor();
 
       if (chest.modData.TryGetValue($"{CustomChestConfig.CONST_MODDATA_PREFIX}/{CustomChestConfig.CONST_HINGES_KEY}", out String hinges_text))
         if (!String.IsNullOrWhiteSpace(hinges_text) && hinges_text.Length == 6)
@@ -85,15 +67,28 @@ namespace ChestEx {
     public static void SetCustomConfigName(this Chest chest, String name) {
       String final_name = name.Trim().Trim('|');
       chest.modData[$"{CustomChestConfig.CONST_MODDATA_PREFIX}/{CustomChestConfig.CONST_NAME_KEY}"] = final_name;
-      chest.modData[CustomChestConfig.CONST_CHESTSANYWHERE_NAME_COMPATIBILITY_KEY]                  = final_name;
+      chest.modData[CustomChestConfig.CONST_NAME_CHESTSANYWHERE_KEY]                                = final_name;
     }
-
     public static void SetCustomConfigDescription(this Chest chest, String description) {
       chest.modData[$"{CustomChestConfig.CONST_MODDATA_PREFIX}/{CustomChestConfig.CONST_DESC_KEY}"] = description.Trim();
     }
-
     public static void SetCustomConfigHingesColour(this Chest chest, Color hingesColour) {
       chest.modData[$"{CustomChestConfig.CONST_MODDATA_PREFIX}/{CustomChestConfig.CONST_HINGES_KEY}"] = hingesColour.AsHexCode();
+    }
+
+    public static CustomChestConfig GetCustomConfig(this Chest chest) {
+      var config = new CustomChestConfig {
+        mName = chest.GetCustomConfigName(), mDescription = chest.GetCustomConfigDescription(), mHingesColour = chest.GetCustomConfigHingesColour()
+      };
+
+      chest.SetCustomConfig(config);
+
+      return config;
+    }
+    public static void SetCustomConfig(this Chest chest, CustomChestConfig config) {
+      chest.SetCustomConfigName(config.mName);
+      chest.SetCustomConfigDescription(config.mDescription);
+      chest.SetCustomConfigHingesColour(config.mHingesColour);
     }
   }
 }
