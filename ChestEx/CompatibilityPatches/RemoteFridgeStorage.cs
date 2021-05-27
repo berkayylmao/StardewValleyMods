@@ -23,7 +23,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
@@ -33,6 +36,7 @@ using Harmony;
 using JetBrains.Annotations;
 
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 
 using StardewValley;
 
@@ -50,17 +54,69 @@ namespace ChestEx.CompatibilityPatches {
       [HarmonyPostfix]
       [UsedImplicitly]
       [SuppressMessage("ReSharper", "InconsistentNaming")]
-      private static void postfixUpdatePos(Object ____config) {
+      private static void postfixUpdatePos(ref Object ____config) {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
+
         Traverse.Create(____config).Property<Boolean>("OverrideOffset").Value = true;
         Traverse.Create(____config).Property<Int32>("XOffset").Value          = menu.mSourceInventoryOptions.mBounds.X - 48;
         Traverse.Create(____config).Property<Int32>("YOffset").Value          = menu.mSourceInventoryOptions.mBounds.Y + 96;
       }
 
+      [HarmonyTranspiler]
+      [UsedImplicitly]
+      [SuppressMessage("ReSharper", "InconsistentNaming")]
+      private static IEnumerable<CodeInstruction> transpilerHandleClick(IEnumerable<CodeInstruction> instructions) {
+        Boolean patched = false;
+
+        foreach (CodeInstruction instruction in instructions) {
+          if (!patched && instruction.opcode == OpCodes.Callvirt && (MethodInfo)instruction.operand == AccessTools.Method(typeof(ICursorPosition), "get_ScreenPixels")) {
+            yield return instruction;
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Utility), "ModifyCoordinatesForUIScale"));
+            
+            patched = true;
+            continue;
+          }
+
+          yield return instruction;
+        }
+        patched.ReportTranspilerStatus();
+      }
+
       public static void Install() {
+        GlobalVars.gHarmony.PatchEx(AccessTools.Method(sType, "HandleClick"),
+                                    transpiler: new HarmonyMethod(AccessTools.Method(typeof(ChestController), "transpilerHandleClick")),
+                                    reason: "fix RemoteFridgeStorage's click handler");
         GlobalVars.gHarmony.PatchEx(AccessTools.Method(sType, "UpdatePos"),
                                     postfix: new HarmonyMethod(AccessTools.Method(typeof(ChestController), "postfixUpdatePos")),
                                     reason: "move RemoteFridgeStorage's button");
+      }
+    }
+
+    [HarmonyPatch]
+    private static class ModEntry {
+      private static Type sType => Type.GetType("RemoteFridgeStorage.ModEntry, RemoteFridgeStorage");
+
+      [HarmonyTranspiler]
+      [UsedImplicitly]
+      [SuppressMessage("ReSharper", "InconsistentNaming")]
+      private static IEnumerable<CodeInstruction> transpilerEntry(IEnumerable<CodeInstruction> instructions) {
+        Boolean patched = false;
+
+        foreach (CodeInstruction instruction in instructions) {
+          if (!patched && instruction.opcode == OpCodes.Callvirt && (MethodInfo)instruction.operand == AccessTools.Method(typeof(IDisplayEvents), "add_RenderingActiveMenu")) {
+            instruction.operand = AccessTools.Method(typeof(IDisplayEvents), "add_RenderedActiveMenu");
+            patched             = true;
+          }
+
+          yield return instruction;
+        }
+        patched.ReportTranspilerStatus();
+      }
+
+      public static void Install() {
+        GlobalVars.gHarmony.PatchEx(AccessTools.Method(sType, "Entry"),
+                                    transpiler: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), "transpilerEntry")),
+                                    reason: "fix RemoteFridgeStorage's button rendering");
       }
     }
 
@@ -69,7 +125,10 @@ namespace ChestEx.CompatibilityPatches {
     // Protected:
   #region Protected
 
-    protected override void InstallPatches() { ChestController.Install(); }
+    protected override void InstallPatches() {
+      ChestController.Install();
+      ModEntry.Install();
+    }
 
     protected override void OnLoaded() {
       GlobalVars.gIsRemoteFridgeStorageLoaded = true;
