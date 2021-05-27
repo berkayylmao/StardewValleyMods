@@ -23,7 +23,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
@@ -35,6 +38,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 
 using StardewValley;
 
@@ -127,6 +131,48 @@ namespace ChestEx.CompatibilityPatches {
       }
     }
 
+    [HarmonyPatch]
+    private static class WidgetHost {
+      private static Type sType => Type.GetType("ConvenientChests.CategorizeChests.Interface.WidgetHost, ConvenientChests");
+
+      [HarmonyPrefix]
+      [UsedImplicitly]
+      [SuppressMessage("ReSharper", "InconsistentNaming")]
+      private static void prefixReceiveLeftClick(ref Int32 x, ref Int32 y) {
+        if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
+
+        Vector2 pos = Utility.ModifyCoordinatesForUIScale(GlobalVars.gSMAPIHelper.Input.GetCursorPosition().ScreenPixels);
+        x = (Int32)pos.X;
+        y = (Int32)pos.Y;
+      }
+
+      [HarmonyTranspiler]
+      [UsedImplicitly]
+      [SuppressMessage("ReSharper", "InconsistentNaming")]
+      private static IEnumerable<CodeInstruction> transpilerCtor(IEnumerable<CodeInstruction> instructions) {
+        Boolean patched = false;
+
+        foreach (CodeInstruction instruction in instructions) {
+          if (instruction.opcode == OpCodes.Ldsflda && (FieldInfo)instruction.operand == AccessTools.Field(typeof(Game1), "viewport")) {
+            instruction.operand = AccessTools.Field(typeof(Game1), "uiViewport");
+            patched             = true;
+          }
+
+          yield return instruction;
+        }
+        patched.ReportTranspilerStatus();
+      }
+
+      public static void Install() {
+        GlobalVars.gHarmony.PatchEx(AccessTools.Method(sType, "ReceiveLeftClick"),
+                                    new HarmonyMethod(AccessTools.Method(typeof(WidgetHost), "prefixReceiveLeftClick")),
+                                    reason: "fix ConvenientChests' click handler");
+        GlobalVars.gHarmony.PatchEx(AccessTools.Constructor(sType, new[] { typeof(IModEvents), typeof(IInputHelper) }),
+                                    transpiler: new HarmonyMethod(AccessTools.Method(typeof(WidgetHost), "transpilerCtor")),
+                                    reason: "fix ConvenientChests' click handler");
+      }
+    }
+
   #endregion
 
     // Protected:
@@ -135,6 +181,7 @@ namespace ChestEx.CompatibilityPatches {
     protected override void InstallPatches() {
       CategoryMenu.Install();
       ChestOverlay.Install();
+      WidgetHost.Install();
     }
 
     protected override void OnLoaded() {
@@ -148,7 +195,8 @@ namespace ChestEx.CompatibilityPatches {
     // Constructors:
   #region Constructors
 
-    internal ConvenientChests() : base("aEnigma.ConvenientChests", new SemanticVersion("1.5.2-unofficial.2-borthain")) { }
+    internal ConvenientChests()
+      : base("aEnigma.ConvenientChests", new SemanticVersion("1.5.2-unofficial.2-borthain")) { }
 
   #endregion
   }
