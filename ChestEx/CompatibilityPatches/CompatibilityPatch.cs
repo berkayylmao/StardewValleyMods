@@ -60,7 +60,7 @@ namespace ChestEx.CompatibilityPatches {
       GlobalVars.gSMAPIMonitor.Log($"The target version of '{this.name}' for the compatibility patches is '{this.version}'.", LogLevel.Info);
     }
 
-    private void endLog() { GlobalVars.gSMAPIMonitor.Log($"Finished installing compatibility patches.", LogLevel.Info); }
+    private void endLog() { GlobalVars.gSMAPIMonitor.Log("Finished installing compatibility patches.", LogLevel.Info); }
 
   #endregion
 

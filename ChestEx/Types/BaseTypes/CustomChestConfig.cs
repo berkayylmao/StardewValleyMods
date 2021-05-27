@@ -24,11 +24,7 @@
 
 using System;
 
-using ChestEx.LanguageExtensions;
-
 using Microsoft.Xna.Framework;
-
-using StardewValley.Objects;
 
 namespace ChestEx.Types.BaseTypes {
   public class CustomChestConfig {
@@ -47,6 +43,5 @@ namespace ChestEx.Types.BaseTypes {
     public String mName         { get; set; } = CONST_DEFAULT_NAME;
     public String mDescription  { get; set; } = CONST_DEFAULT_DESC;
     public Color  mHingesColour { get; set; } = Color.Black;
-
   }
 }

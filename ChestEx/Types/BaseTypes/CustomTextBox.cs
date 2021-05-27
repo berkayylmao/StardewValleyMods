@@ -208,7 +208,8 @@ namespace ChestEx.Types.BaseTypes {
 
     public CustomTextBox(Rectangle           bounds,                     Color          textColour,                Color  textBoxColour, String text        = "",
                          String              preText             = "",   Int32          maxLength            = -1, String label = "",    Color  labelColour = default,
-                         Func<Char, Boolean> inputFilterFunction = null, Action<String> onTextChangedHandler = null) : base(null, null, Game1.smallFont, textColour) {
+                         Func<Char, Boolean> inputFilterFunction = null, Action<String> onTextChangedHandler = null)
+      : base(null, null, Game1.smallFont, textColour) {
       this.limitWidth = false;
 
       this.mLabelColour   = labelColour == default ? textBoxColour : labelColour;

@@ -350,9 +350,9 @@ namespace ChestEx.Types.BaseTypes {
     /// </summary>
     [UsedImplicitly]
     public Rectangle mRealBounds =>
-      new(Math.Min(this.mSourceInventoryOptions.mBounds.X, this.mPlayerInventoryOptions.mBounds.X), 
+      new(Math.Min(this.mSourceInventoryOptions.mBounds.X, this.mPlayerInventoryOptions.mBounds.X),
           this.mSourceInventoryOptions.mBounds.Y,
-          Math.Max(this.mSourceInventoryOptions.mBounds.Width, this.mPlayerInventoryOptions.mBounds.Width), 
+          Math.Max(this.mSourceInventoryOptions.mBounds.Width, this.mPlayerInventoryOptions.mBounds.Width),
           this.mPlayerInventoryOptions.mBounds.Bottom - this.mSourceInventoryOptions.mBounds.Y);
 
     public Boolean mIsVisible { get; protected set; }
@@ -362,7 +362,10 @@ namespace ChestEx.Types.BaseTypes {
     public Vector2                 mSourceTile { get; private set; }
     public ExtendedChest.ChestType mSourceType { get; private set; }
 
-    public T GetSourceAs<T>() where T : Item { return this.mSVSourceItem is T ? this.mSVSourceItem as T : null; }
+    public T GetSourceAs<T>()
+      where T : Item {
+      return this.mSVSourceItem is T ? this.mSVSourceItem as T : null;
+    }
 
     // Virtuals:
   #region Virtuals
@@ -775,14 +778,8 @@ namespace ChestEx.Types.BaseTypes {
     public CustomItemGrabMenu(IList<Item> inventory, Boolean reverseGrab, Boolean showReceivingMenu, InventoryMenu.highlightThisItem highlightFunction,
                               behaviorOnItemSelect behaviorOnItemSelectFunction, String message, behaviorOnItemSelect behaviorOnItemGrab = null, Boolean snapToBottom = false,
                               Boolean canBeExitedWithKey = false, Boolean playRightClickSound = true, Boolean allowRightClick = true, Boolean showOrganizeButton = false,
-                              Int32 source = 0, Item sourceItem = null, Int32 whichSpecialButton = -1, Object context = null) : base(null,
-                                                                                                                                     new
-                                                                                                                                       MenuWithInventoryCtorParams(highlightFunction,
-                                                                                                                                                                   true,
-                                                                                                                                                                   true,
-                                                                                                                                                                   0,
-                                                                                                                                                                   0,
-                                                                                                                                                                   64)) {
+                              Int32 source = 0, Item sourceItem = null, Int32 whichSpecialButton = -1, Object context = null)
+      : base(null, new MenuWithInventoryCtorParams(highlightFunction, true, true, 0, 0, 64)) {
       // Set custom values
       {
         this.mMenuItems = new List<CustomItemGrabMenuItem>();

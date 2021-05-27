@@ -40,7 +40,8 @@ namespace ChestEx.CompatibilityPatches {
     // Constructors:
   #region Constructors
 
-    internal Automate() : base("Pathoschild.Automate", new SemanticVersion("1.22.1")) { }
+    internal Automate()
+      : base("Pathoschild.Automate", new SemanticVersion("1.22.1")) { }
 
   #endregion
   }

@@ -165,31 +165,35 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
     public MainMenu(IList<Item>          inventory,                    Boolean reverseGrab, Boolean showReceivingMenu, InventoryMenu.highlightThisItem highlightFunction,
                     behaviorOnItemSelect behaviorOnItemSelectFunction, String  message, behaviorOnItemSelect behaviorOnItemGrab = null, Boolean snapToBottom = false,
                     Boolean              canBeExitedWithKey = false,   Boolean playRightClickSound = true, Boolean allowRightClick = true, Boolean showOrganizeButton = false,
-                    Int32                source             = 0,       Item    sourceItem          = null, Int32 whichSpecialButton = -1, Object context = null) : base(inventory,
-                                                                                                                                                                        reverseGrab,
-                                                                                                                                                                        showReceivingMenu,
-                                                                                                                                                                        highlightFunction,
-                                                                                                                                                                        behaviorOnItemSelectFunction,
-                                                                                                                                                                        message,
-                                                                                                                                                                        behaviorOnItemGrab,
-                                                                                                                                                                        snapToBottom,
-                                                                                                                                                                        canBeExitedWithKey,
-                                                                                                                                                                        playRightClickSound,
-                                                                                                                                                                        allowRightClick,
-                                                                                                                                                                        showOrganizeButton,
-                                                                                                                                                                        source,
-                                                                                                                                                                        sourceItem,
-                                                                                                                                                                        whichSpecialButton,
-                                                                                                                                                                        context) {
+                    Int32                source             = 0,       Item    sourceItem          = null, Int32 whichSpecialButton = -1, Object context = null)
+      : base(inventory,
+             reverseGrab,
+             showReceivingMenu,
+             highlightFunction,
+             behaviorOnItemSelectFunction,
+             message,
+             behaviorOnItemGrab,
+             snapToBottom,
+             canBeExitedWithKey,
+             playRightClickSound,
+             allowRightClick,
+             showOrganizeButton,
+             source,
+             sourceItem,
+             whichSpecialButton,
+             context) {
       base.UnregisterInputEvents();
 
       Rectangle ui_viewport = GlobalVars.gUIViewport;
 
       this.ItemsToGrabMenu = new InventoryMenu(ui_viewport.Width / 2
                                                - this.ItemsToGrabMenu.width / 2
-                                               /* chest icon padding */ + this.ItemsToGrabMenu.width / 24
-                                               /* organize buttons padding */ - (64 + 16),
-                                               Math.Max((GlobalVars.gIsChestsAnywhereLoaded ? 82 : 48) + (GlobalVars.gIsExpandedStorageLoaded ? 52: 0), (Int32)(ui_viewport.Height * 0.5f - this.ItemsToGrabMenu.height * 0.75f)),
+                                               /* chest icon padding */
+                                               + this.ItemsToGrabMenu.width / 24
+                                               /* organize buttons padding */
+                                               - (64 + 16),
+                                               Math.Max((GlobalVars.gIsChestsAnywhereLoaded ? 82 : 48) + (GlobalVars.gIsExpandedStorageLoaded ? 52 : 0),
+                                                        (Int32)(ui_viewport.Height * 0.5f - this.ItemsToGrabMenu.height * 0.75f)),
                                                false,
                                                this.ItemsToGrabMenu.actualInventory,
                                                this.ItemsToGrabMenu.highlightMethod,
@@ -202,7 +206,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
       this.mSourceInventoryOptions.mBounds = this.ItemsToGrabMenu.GetDialogueBoxRectangle();
       this.mSourceInventoryOptions.SetVisible(this.mSourceInventoryOptions.mIsVisible);
       if (GlobalVars.gIsExpandedStorageLoaded) {
-        this.mSourceInventoryOptions.mBounds.Y -= 52;
+        this.mSourceInventoryOptions.mBounds.Y      -= 52;
         this.mSourceInventoryOptions.mBounds.Height += 52;
       }
 

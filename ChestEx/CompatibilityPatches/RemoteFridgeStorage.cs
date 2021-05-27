@@ -72,7 +72,7 @@ namespace ChestEx.CompatibilityPatches {
           if (!patched && instruction.opcode == OpCodes.Callvirt && (MethodInfo)instruction.operand == AccessTools.Method(typeof(ICursorPosition), "get_ScreenPixels")) {
             yield return instruction;
             yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Utility), "ModifyCoordinatesForUIScale"));
-            
+
             patched = true;
             continue;
           }
@@ -141,7 +141,8 @@ namespace ChestEx.CompatibilityPatches {
     // Constructors:
   #region Constructors
 
-    internal RemoteFridgeStorage() : base("EternalSoap.RemoteFridgeStorage", new SemanticVersion("1.8.1")) { }
+    internal RemoteFridgeStorage()
+      : base("EternalSoap.RemoteFridgeStorage", new SemanticVersion("1.8.1")) { }
 
   #endregion
   }

@@ -1,4 +1,28 @@
-﻿using System;
+﻿#region License
+
+// clang-format off
+// 
+//    ChestEx (StardewValleyMods)
+//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+// 
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as published
+//    by the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+// 
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+// 
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program. If not, see <https://www.gnu.org/licenses/>.
+// 
+// clang-format on
+
+#endregion
+
+using System;
 using System.Linq;
 
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
@@ -12,7 +36,7 @@ using StardewValley.Objects;
 namespace ChestEx.LanguageExtensions {
   public static class SVExtensions {
     /// <summary>
-    /// Gets a <see cref="Rectangle"/> to wrap the given rectangle to be used with'<see cref="StardewValley.Game1.drawDialogueBox(Int32, Int32, Int32, Int32, Boolean, Boolean, String, Boolean, Boolean, Int32, Int32, Int32)"/>'.
+    /// Gets a <see cref="Rectangle"/> to wrap the given rectangle to be used with'<see cref="StardewValley.Game1.drawDialogueBox(int, int, int, int, bool, bool, string, bool, bool, int, int, int)"/>'.
     /// </summary>
     /// <returns>A <see cref="Rectangle"/> that can be used to draw a dialogue box around the given rectangle.</returns>
     public static Rectangle GetDialogueBoxRectangle(this Rectangle rectangle) {
@@ -23,7 +47,7 @@ namespace ChestEx.LanguageExtensions {
     }
 
     /// <summary>
-    /// Gets a <see cref="Rectangle"/> to wrap the given <see cref="InventoryMenu"/> using '<see cref="StardewValley.Game1.drawDialogueBox(Int32, Int32, Int32, Int32, Boolean, Boolean, String, Boolean, Boolean, Int32, Int32, Int32)"/>'.
+    /// Gets a <see cref="Rectangle"/> to wrap the given <see cref="InventoryMenu"/> using '<see cref="StardewValley.Game1.drawDialogueBox(int, int, int, int, bool, bool, string, bool, bool, int, int, int)"/>'.
     /// </summary>
     /// <returns>A <see cref="Rectangle"/> that can be used to draw a dialogue box around the given menu.</returns>
     public static Rectangle GetDialogueBoxRectangle(this InventoryMenu menu) {

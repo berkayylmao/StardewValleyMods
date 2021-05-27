@@ -328,7 +328,8 @@ namespace ChestEx.CompatibilityPatches {
     // Constructors:
   #region Constructors
 
-    internal ChestsAnywhere() : base("Pathoschild.ChestsAnywhere", new SemanticVersion("1.20.13")) { }
+    internal ChestsAnywhere()
+      : base("Pathoschild.ChestsAnywhere", new SemanticVersion("1.20.13")) { }
 
   #endregion
   }
