@@ -1,6 +1,5 @@
 ﻿#region License
 
-// clang-format off
 // 
 //    ChestEx (StardewValleyMods)
 //    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
@@ -11,14 +10,12 @@
 //    (at your option) any later version.
 // 
 //    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    but WITHOUT ANY WARRANTY, without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 //    GNU Affero General Public License for more details.
 // 
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program. If not, see <https://www.gnu.org/licenses/>.
-// 
-// clang-format on
 
 #endregion
 
@@ -58,7 +55,7 @@ namespace ChestEx.CompatibilityPatches {
       private static void prefixRecreateItemToggles(Object __instance) {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
-        Int32 width = menu.mSourceInventoryOptions.mBounds.Width;
+        Int32 width = menu.mSourceInventoryOptions.mDialogueBoxBounds.Width;
         Traverse.Create(__instance).Property<Int32>("Width").Value = width;
         Traverse.Create(__instance).Property("ToggleBag").Property<Int32>("Width").Value =
           width - Traverse.Create(__instance).Property("ScrollBar").Property<Int32>("Width").Value - 16;
@@ -70,7 +67,7 @@ namespace ChestEx.CompatibilityPatches {
       private static void postfixPositionElements(Object __instance) {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
-        Int32 height = menu.mPlayerInventoryOptions.mBounds.Bottom - menu.mSourceInventoryOptions.mBounds.Y;
+        Int32 height = menu.mPlayerInventoryOptions.mDialogueBoxBounds.Bottom - menu.mSourceInventoryOptions.mDialogueBoxBounds.Y;
         Traverse.Create(__instance).Property<Int32>("Height").Value                        = height;
         Traverse.Create(__instance).Property("Background").Property<Int32>("Height").Value = height;
         Traverse.Create(__instance).Property("ScrollBar").Property<Int32>("Height").Value =
@@ -106,7 +103,7 @@ namespace ChestEx.CompatibilityPatches {
         var stashbtn_height   = Traverse.Create(__instance).Property("StashButton").Property<Int32>("Height");
         var stashbtn_lpadding = Traverse.Create(__instance).Property("StashButton").Property<Int32>("LeftPadding");
 
-        Rectangle menu_rect = menu.mSourceInventoryOptions.mBounds;
+        Rectangle menu_rect = menu.mSourceInventoryOptions.mDialogueBoxBounds;
         stashbtn_pos.Value = new Point(menu_rect.X - stashbtn_width.Value + stashbtn_lpadding.Value - 4, menu_rect.Bottom - stashbtn_height.Value - 32);
         openbtn_pos.Value  = new Point(menu_rect.X - openbtn_width.Value + openbtn_lpadding.Value - 4, stashbtn_pos.Value.Y - openbtn_height.Value);
       }
@@ -118,7 +115,7 @@ namespace ChestEx.CompatibilityPatches {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
         Traverse.Create(__instance).Property("CategoryMenu").Property<Point>("Position").Value =
-          new Point(menu.mSourceInventoryOptions.mBounds.X + 12, menu.mSourceInventoryOptions.mBounds.Y);
+          new Point(menu.mSourceInventoryOptions.mDialogueBoxBounds.X + 12, menu.mSourceInventoryOptions.mDialogueBoxBounds.Y);
       }
 
       public static void Install() {

@@ -1,6 +1,5 @@
 ﻿#region License
 
-// clang-format off
 // 
 //    ChestEx (StardewValleyMods)
 //    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
@@ -11,14 +10,12 @@
 //    (at your option) any later version.
 // 
 //    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    but WITHOUT ANY WARRANTY, without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 //    GNU Affero General Public License for more details.
 // 
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program. If not, see <https://www.gnu.org/licenses/>.
-// 
-// clang-format on
 
 #endregion
 
@@ -329,7 +326,7 @@ namespace ChestEx.CompatibilityPatches {
   #region Constructors
 
     internal ChestsAnywhere()
-      : base("Pathoschild.ChestsAnywhere", new SemanticVersion("1.20.13")) { }
+      : base("Pathoschild.ChestsAnywhere", new SemanticVersion("1.20.14")) { }
 
   #endregion
   }
