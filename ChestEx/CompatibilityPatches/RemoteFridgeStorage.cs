@@ -55,7 +55,7 @@ namespace ChestEx.CompatibilityPatches {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
         Traverse.Create(____config).Property<Boolean>("OverrideOffset").Value = true;
-        Traverse.Create(____config).Property<Int32>("XOffset").Value          = menu.mSourceInventoryOptions.mDialogueBoxBounds.X - 48;
+        Traverse.Create(____config).Property<Int32>("XOffset").Value          = menu.mSourceInventoryOptions.mDialogueBoxBounds.X - 64;
         Traverse.Create(____config).Property<Int32>("YOffset").Value          = menu.mSourceInventoryOptions.mDialogueBoxBounds.Y + 96;
       }
 

@@ -104,8 +104,8 @@ namespace ChestEx.CompatibilityPatches {
         var stashbtn_lpadding = Traverse.Create(__instance).Property("StashButton").Property<Int32>("LeftPadding");
 
         Rectangle menu_rect = menu.mSourceInventoryOptions.mDialogueBoxBounds;
-        stashbtn_pos.Value = new Point(menu_rect.X - stashbtn_width.Value + stashbtn_lpadding.Value - 4, menu_rect.Bottom - stashbtn_height.Value - 32);
-        openbtn_pos.Value  = new Point(menu_rect.X - openbtn_width.Value + openbtn_lpadding.Value - 4, stashbtn_pos.Value.Y - openbtn_height.Value);
+        stashbtn_pos.Value = new Point(menu_rect.X - 16 - stashbtn_width.Value + stashbtn_lpadding.Value - 4, menu_rect.Bottom - stashbtn_height.Value - 32);
+        openbtn_pos.Value  = new Point(menu_rect.X - 16 - openbtn_width.Value + openbtn_lpadding.Value - 4, stashbtn_pos.Value.Y - openbtn_height.Value);
       }
 
       [HarmonyPostfix]
@@ -115,7 +115,7 @@ namespace ChestEx.CompatibilityPatches {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
         Traverse.Create(__instance).Property("CategoryMenu").Property<Point>("Position").Value =
-          new Point(menu.mSourceInventoryOptions.mDialogueBoxBounds.X + 12, menu.mSourceInventoryOptions.mDialogueBoxBounds.Y);
+          new Point(menu.mSourceInventoryOptions.mDialogueBoxBounds.X, menu.mSourceInventoryOptions.mDialogueBoxBounds.Y);
       }
 
       public static void Install() {

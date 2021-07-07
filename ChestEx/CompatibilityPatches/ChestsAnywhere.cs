@@ -140,7 +140,7 @@ namespace ChestEx.CompatibilityPatches {
             yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(sType, "Menu"));
             yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CustomItemGrabMenu), "get_mRealBounds"));
             yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Rectangle), "Y"));
-            yield return new CodeInstruction(OpCodes.Ldc_I4, 132);
+            yield return new CodeInstruction(OpCodes.Ldc_I4, 64);
             yield return new CodeInstruction(OpCodes.Add);
             yield return new CodeInstruction(OpCodes.Ldarg_0);
             yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(sType, "Menu"));
