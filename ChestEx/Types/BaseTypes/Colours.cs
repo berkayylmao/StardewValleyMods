@@ -72,13 +72,11 @@ namespace ChestEx.Types.BaseTypes {
 
     public Colours NewBackgroundColour(Color colour) { return new(colour, this.mBorderColour, this.mForegroundColour, this.mHoverColour, this.mActiveColour); }
     public Colours MultAlpha(Single multiplier) {
-      multiplier = Math.Min(1.0f, Math.Max(0.0f, multiplier));
-
-      return new Colours(this.mBackgroundColour.MultAlpha(multiplier),
-                         this.mBorderColour.MultAlpha(multiplier),
-                         this.mForegroundColour.MultAlpha(multiplier),
-                         this.mHoverColour.MultAlpha(multiplier),
-                         this.mActiveColour.MultAlpha(multiplier));
+      return new(this.mBackgroundColour.MultAlpha(multiplier),
+                 this.mBorderColour.MultAlpha(multiplier),
+                 this.mForegroundColour.MultAlpha(multiplier),
+                 this.mHoverColour.MultAlpha(multiplier),
+                 this.mActiveColour.MultAlpha(multiplier));
     }
 
     // Statics:
@@ -91,9 +89,23 @@ namespace ChestEx.Types.BaseTypes {
     private static Colours sMenuTileColourCache;
     public static Colours GenerateFromMenuTiles() {
       if (sMenuTileColourCache is null) {
-        var pixel = new Color[1];
-        Game1.menuTexture.GetData(0, new Rectangle(8, 264, 1, 1), pixel, 0, 1);
-        sMenuTileColourCache = GenerateFrom(pixel[0]);
+        Color bgColour,
+              borderColour,
+              fgColour,
+              hoverColour,
+              activeColour;
+        // gen colours
+        {
+          var pixel = new Color[1];
+          Game1.menuTexture.GetData(0, new Rectangle(20, 128, 1, 1), pixel, 0, 1);
+          borderColour = pixel[0];
+          Game1.menuTexture.GetData(0, new Rectangle(64, 128, 1, 1), pixel, 0, 1);
+          bgColour     = pixel[0];
+          fgColour     = bgColour.ContrastColour();
+          hoverColour  = bgColour.MultRGB(1.25f);
+          activeColour = bgColour.MultRGB(0.675f);
+        }
+        sMenuTileColourCache = new Colours(bgColour, borderColour, fgColour, hoverColour, activeColour);
       }
 
       return sMenuTileColourCache;

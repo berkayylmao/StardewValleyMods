@@ -22,6 +22,8 @@
 using System;
 using System.Collections.Generic;
 
+using ChestEx.LanguageExtensions;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -109,7 +111,7 @@ namespace ChestEx.Types.BaseTypes {
       this.switcherButtonsMaxAmount = (bounds.Height - 6) / (bounds.Width + 6);
 
       this.activeSwitcherButtonColours   = Colours.GenerateFrom(Color.White);
-      this.inactiveSwitcherButtonColours = colours;
+      this.inactiveSwitcherButtonColours = Colours.GenerateFrom(colours.mActiveColour.MultAlpha(0.5f));
     }
 
   #endregion

@@ -66,7 +66,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
         this.configPanel = new ChestConfigPanel(this);
         this.configPanel.SetVisible(false);
 
-        this.configButton = new CustomTextureButton(new Rectangle(source_menu_bounds.Right + 32, source_menu_bounds.Top + 16, 64, 64),
+        this.configButton = new CustomTextureButton(new Rectangle(source_menu_bounds.Right + 16, source_menu_bounds.Top + 16, 64, 64),
                                                     Colours.gTurnTranslucentOnAction,
                                                     TexturePresets.gConfigButtonTexture,
                                                     "Open configuration panel",
@@ -81,7 +81,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
 
       if (createFillStacksButton) {
         this.fillStacksButton =
-          new CustomClickableTextureComponent(new Rectangle(source_menu_bounds.Right + 32, this.configButton?.mBounds.Bottom + 16 ?? source_menu_bounds.Top + 16, 64, 64),
+          new CustomClickableTextureComponent(new Rectangle(source_menu_bounds.Right + 16, this.configButton?.mBounds.Bottom + 16 ?? source_menu_bounds.Top + 16, 64, 64),
                                               Colours.gTurnTranslucentOnAction,
                                               TexturePresets.gFillStacksPickerButtonTexture,
                                               Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks")) {
@@ -95,7 +95,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
 
       if (createOrganizeButton) {
         this.organizeButton =
-          new CustomClickableTextureComponent(new Rectangle(source_menu_bounds.Right + 32, this.fillStacksButton?.bounds.Bottom + 16 ?? source_menu_bounds.Top + 16, 64, 64),
+          new CustomClickableTextureComponent(new Rectangle(source_menu_bounds.Right + 16, this.fillStacksButton?.bounds.Bottom + 16 ?? source_menu_bounds.Top + 16, 64, 64),
                                               Colours.gTurnTranslucentOnAction,
                                               TexturePresets.gOrganizeButtonTexture,
                                               Game1.content.LoadString("Strings\\UI:ItemGrab_Organize")) {
@@ -114,13 +114,13 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu {
                                                             this.mPlayerInventoryOptions.mDialogueBoxBounds.Bottom);
 
       if (this.trashCan is not null)
-        this.trashCan.bounds = new Rectangle(this.mPlayerInventoryOptions.mDialogueBoxBounds.Right + 32,
+        this.trashCan.bounds = new Rectangle(this.mPlayerInventoryOptions.mDialogueBoxBounds.Right + 24,
                                              this.mPlayerInventoryOptions.mDialogueBoxBounds.Top + 32,
                                              this.trashCan.bounds.Width,
                                              this.trashCan.bounds.Height);
 
       this.okButton =
-        new CustomClickableTextureComponent(new Rectangle(player_menu_bounds.Right + 32,
+        new CustomClickableTextureComponent(new Rectangle(player_menu_bounds.Right + 24,
                                                           this.trashCan?.bounds.Bottom + 16 ?? this.mPlayerInventoryOptions.mDialogueBoxBounds.Top + 32,
                                                           64,
                                                           64),

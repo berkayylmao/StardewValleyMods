@@ -138,7 +138,13 @@ namespace ChestEx.Types.BaseTypes {
     /// <para>2. Updates the textbox's focus state considering <see cref="Data.DetailedBounds.mTextBoxContentBounds"/>.</para>
     /// </remarks>
     public virtual void OnButtonPressed(InputStateEx inputState) {
-      if (this.Selected) GlobalVars.gSMAPIHelper.Input.Suppress(inputState.mButton);
+      if (this.Selected) {
+        GlobalVars.gSMAPIHelper.Input.Suppress(inputState.mButton);
+        if (inputState.mButton is SButton.Escape or SButton.Enter) {
+          this.mData.UpdateCursorStatus(false, new InputStateEx(SButton.Escape));
+          this.Selected = false;
+        }
+      }
 
       if (inputState.mButton == SButton.MouseLeft) {
         this.Selected = this.GetData().mDetailedBounds.mTextBoxContentBounds.Contains(inputState.mCursorPos);

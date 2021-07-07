@@ -237,7 +237,7 @@ namespace ChestEx.LanguageExtensions {
                          SpriteEffects.None,
                          0.5f);
       }
-      menu.draw(spriteBatch, -1);
+      menu.draw(spriteBatch, slotBorderColour.R, slotBorderColour.G, slotBorderColour.B);
     }
 
     public static void DrawHoverText(this SpriteBatch spriteBatch,           SpriteFont font,           String  text,              String title = "",

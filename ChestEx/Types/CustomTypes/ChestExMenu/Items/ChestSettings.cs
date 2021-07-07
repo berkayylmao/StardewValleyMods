@@ -86,7 +86,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
                                                             colours * 1.5f,
                                                             "Rows:",
                                                             1,
-                                                            48,
+                                                            24,
                                                             Config.Get().mRows,
                                                             _ => { this.applyButton.SetEnabled(true); });
 
@@ -94,7 +94,7 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
                                                                colours * 1.5f,
                                                                "Columns:",
                                                                1,
-                                                               48,
+                                                               24,
                                                                Config.Get().mColumns,
                                                                _ => { this.applyButton.SetEnabled(true); });
       }

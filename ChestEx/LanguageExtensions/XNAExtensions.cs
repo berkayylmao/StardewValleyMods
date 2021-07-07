@@ -79,10 +79,15 @@ namespace ChestEx.LanguageExtensions {
     public static Color ContrastColour(this Color colour) { return (0.375 * colour.R + 0.587 * colour.G + 0.114 * colour.B) / 255 > 0.5 ? Color.Black : Color.White; }
 
     public static Color MultRGB(this Color colour, Single multiplier) {
-      return Color.FromNonPremultiplied((Int32)(colour.R * multiplier), (Int32)(colour.G * multiplier), (Int32)(colour.B * multiplier), colour.A);
+      return Color.FromNonPremultiplied(Math.Min(255, Math.Max(0, (Int32)(colour.R * multiplier))),
+                                        Math.Min(255, Math.Max(0, (Int32)(colour.G * multiplier))),
+                                        Math.Min(255, Math.Max(0, (Int32)(colour.B * multiplier))),
+                                        colour.A);
     }
 
-    public static Color MultAlpha(this Color colour, Single multiplier) { return Color.FromNonPremultiplied(colour.R, colour.G, colour.B, (Int32)(colour.A * multiplier)); }
+    public static Color MultAlpha(this Color colour, Single multiplier) {
+      return Color.FromNonPremultiplied(colour.R, colour.G, colour.B, Math.Min(255, Math.Max(0, (Int32)(colour.A * multiplier))));
+    }
 
     public static Texture2D ToGrayScale(this Texture2D texture, GraphicsDevice device) {
       // get original pixels
