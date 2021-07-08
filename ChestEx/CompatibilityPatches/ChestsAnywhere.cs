@@ -227,20 +227,23 @@ namespace ChestEx.CompatibilityPatches {
     private static class ChestContainer {
       private static Type sType => Type.GetType("Pathoschild.Stardew.ChestsAnywhere.Framework.Containers.ChestContainer, ChestsAnywhere");
 
-      [HarmonyPrefix]
+      [HarmonyPostfix]
       [UsedImplicitly]
       [SuppressMessage("ReSharper", "InconsistentNaming")]
-      private static Boolean prefixOpenMenu(Chest ___Chest, Object ___Context, ref IClickableMenu __result) {
+      private static Boolean prefixOpenMenu(Object __instance, Chest ___Chest, Object ___Context, ref IClickableMenu __result) {
         if (Game1.activeClickableMenu is CustomItemGrabMenu menu) menu.exitThisMenu(false);
         if (___Chest.SpecialChestType != Chest.SpecialChestTypes.None || ___Chest.playerChest is null || !___Chest.playerChest.Value) return true;
 
-        __result = new MainMenu(___Chest.GetItemsForPlayer(Game1.player.UniqueMultiplayerID),
+        __result = new MainMenu(Traverse.Create(__instance).Property<IList<Item>>("Inventory").Value,
                                 false,
                                 true,
-                                (__result as ItemGrabMenu)?.inventory.highlightMethod,
-                                Traverse.Create(__result).Field<ItemGrabMenu.behaviorOnItemSelect>("behaviorFunction")?.Value,
+                                (InventoryMenu.highlightThisItem)AccessTools.Method(sType, "CanAcceptItem", new[] { typeof(Item) })
+                                                                            .CreateDelegate(typeof(InventoryMenu.highlightThisItem), __instance),
+                                (ItemGrabMenu.behaviorOnItemSelect)AccessTools.Method(sType, "GrabItemFromPlayer", new[] { typeof(Item), typeof(Farmer) })
+                                                                              .CreateDelegate(typeof(ItemGrabMenu.behaviorOnItemSelect), __instance),
                                 null,
-                                (__result as ItemGrabMenu)?.behaviorOnItemGrab,
+                                (ItemGrabMenu.behaviorOnItemSelect)AccessTools.Method(sType, "GrabItemFromContainer", new[] { typeof(Item), typeof(Farmer) })
+                                                                              .CreateDelegate(typeof(ItemGrabMenu.behaviorOnItemSelect), __instance),
                                 false,
                                 true,
                                 true,
