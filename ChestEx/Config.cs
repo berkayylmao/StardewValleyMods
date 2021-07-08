@@ -64,7 +64,6 @@ namespace ChestEx {
     }
 
     public Boolean mShowChestHoverTooltip        { get; set; }
-    public Boolean mShowColourPaletteHelpTooltip { get; set; }
 
     public Boolean CanEdit() { return Context.IsMainPlayer; }
 
@@ -124,7 +123,6 @@ namespace ChestEx {
       this.mRows                         = 6;
       this.mColumns                      = 14;
       this.mShowChestHoverTooltip        = true;
-      this.mShowColourPaletteHelpTooltip = true;
     }
 
   #endregion
