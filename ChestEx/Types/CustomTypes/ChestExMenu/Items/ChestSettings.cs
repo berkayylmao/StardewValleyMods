@@ -97,19 +97,19 @@ namespace ChestEx.Types.CustomTypes.ChestExMenu.Items {
                                                                24,
                                                                Config.Get().mColumns,
                                                                _ => { this.applyButton.SetEnabled(true); });
-      }
 
-      this.applyButton = new CustomButton(new Rectangle(bounds.Right - 92, this.columnsNumericUpDown.mBounds.Y + 4, 92 - 10, this.columnsNumericUpDown.mBounds.Height),
-                                          colours * 0.5f,
-                                          "Apply",
-                                          String.Empty,
-                                          () => {
-                                            Config.Get().mRows    = this.rowsNumericUpDown.mValue;
-                                            Config.Get().mColumns = this.columnsNumericUpDown.mValue;
-                                            Config.Save();
-                                            targetChest.ShowMenu();
-                                          });
-      this.applyButton.SetEnabled(false);
+        this.applyButton = new CustomButton(new Rectangle(bounds.Right - 92, this.columnsNumericUpDown.mBounds.Y + 4, 92 - 10, this.columnsNumericUpDown.mBounds.Height),
+                                            colours * 0.5f,
+                                            "Apply",
+                                            String.Empty,
+                                            () => {
+                                              Config.Get().mRows    = this.rowsNumericUpDown.mValue;
+                                              Config.Get().mColumns = this.columnsNumericUpDown.mValue;
+                                              Config.Save();
+                                              targetChest.ShowMenu();
+                                            });
+        this.applyButton.SetEnabled(false);
+      }
 
       this.mComponents.AddRange(new List<ICustomComponent> { this.applyButton, this.columnsNumericUpDown, this.rowsNumericUpDown, this.descriptionTextBox, this.nameTextBox }
                                   .Where(c => c is not null));
