@@ -1010,7 +1010,7 @@ namespace ChestEx.LanguageExtensions {
         for (Int32 j = 0; j < buffIconsToDisplay.Length; j++) {
           if (buffIconsToDisplay[j].Equals("0")) continue;
 
-          String buff_name       = $"{(Convert.ToInt32(buffIconsToDisplay[j]) > 0 ? "+" : "")}{buffIconsToDisplay[j]} ";
+          String buff_name       = $"{(Convert.ToInt32(buffIconsToDisplay[j]) > 0 ? "+" : "")}{buffIconsToDisplay[j]}";
           if (j <= 11) buff_name = Game1.content.LoadString($"Strings\\UI:ItemHover_Buff{j}", buff_name);
 
           Utility.drawWithShadow(spriteBatch,
