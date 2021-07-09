@@ -303,14 +303,14 @@ namespace ChestEx.LanguageExtensions {
                          sat
                          * (sat < 0.01d ? 150.0d :
                            sat < 0.1d   ? 50.0d : 5.0d));
-          val /= 2.375d * val;
+          if (val > 0.0d) val /= 2.375d * val;
         }
         else {
           val = Math.Min(1.0d,
                          val
                          * (val < 0.01d ? 150.0d :
                            val < 0.1d   ? 50.0d : 5.0d));
-          sat /= 2.5d * sat;
+          if (sat > 0.0d) sat /= 2.5d * sat;
         }
 
         negative_bg_colour = DotNetExtensions.ColourFromHSV(hue, sat, val).AsXNAColor();

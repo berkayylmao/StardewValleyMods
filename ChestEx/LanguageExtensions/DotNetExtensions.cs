@@ -50,13 +50,15 @@ namespace ChestEx.LanguageExtensions {
       Int32 min = Math.Min(colour.R, Math.Min(colour.G, colour.B));
 
       hue        = colour.GetHue();
-      saturation = max == 0 ? 0 : 1.0d - 1.0d * min / max;
-      value      = max / 255.0d;
+      saturation = Math.Max(0.0d, Math.Min(1.0d, max == 0 ? 0.0d : 1.0d - 1.0d * min / max));
+      value      = Math.Max(0.0d, Math.Min(1.0d, max / 255.0d));
     }
 
     public static Color ColourFromHSV(Double hue, Double saturation, Double value) {
       while (hue < 0.0d) hue    += 360.0d;
       while (hue >= 360.0d) hue -= 360.0d;
+      saturation = Math.Max(0.0d, Math.Min(1.0d, saturation));
+      value = Math.Max(0.0d, Math.Min(1.0d, value));
 
       Double hf = hue / 60.0d;
       Int32  hi = Convert.ToInt32(Math.Floor(hf)) % 6;
