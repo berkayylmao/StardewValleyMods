@@ -71,17 +71,37 @@ namespace ChestEx.Types.BaseTypes {
           using var ms = new MemoryStream();
           SKManagedWStream writeableStream = new(ms);
           SKCanvas canvas = new(bitmap);
-          
+          SKRect rect = new SKRect(0, 0, this.mBounds.Width, this.mBounds.Height);
+          SKPoint midpoint = new SKPoint(rect.MidX, rect.MidY);
+          float radius = Math.Min(rect.Height, rect.Width) / 1.8f;
+
           using (SKPaint paint = new()) {
-            SKRect rect = new SKRect(0, 0, this.mBounds.Width, this.mBounds.Height);
             paint.Shader = SKShader.CreateLinearGradient(
-              new SKPoint(rect.Left, rect.Top),
-              new SKPoint(rect.Right, rect.Top),
-              new SKColor[] { SKColors.White, this.hueColour.AsSKColor(), SKColors.Black },
-              new float[] {0, 0.5f, 1},
+              new SKPoint(0, rect.Top),
+              new SKPoint(0, rect.Bottom),
+              new SKColor[] {SKColors.Red,
+                             SKColors.Yellow,
+                             SKColors.Lime,
+                             SKColors.Blue,
+                             SKColors.Magenta,
+                             SKColors.Purple,
+                             SKColors.Red
+                            },
+              new float[] {0, 1/6f, 2/6f, 3/6f, 4/6f, 5/6f, 1},
               SKShaderTileMode.Clamp
               );
-            canvas.DrawRect(rect, paint);
+            canvas.DrawPaint(paint);
+          }
+
+          using (SKPaint paint2 = new()) {
+            paint2.Shader = SKShader.CreateLinearGradient(
+              new SKPoint(0, 0),
+              new SKPoint(rect.Right, 0),
+              new SKColor[] { SKColors.White, SKColors.Transparent, SKColors.Black },
+              new float[] {0.1f,0.5f,0.9f},
+              SKShaderTileMode.Clamp
+              );
+            canvas.DrawPaint(paint2);
           }
 
           bitmap.Encode(writeableStream, SKEncodedImageFormat.Png, 100);
