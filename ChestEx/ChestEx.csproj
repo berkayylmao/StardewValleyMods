@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>ChestEx</AssemblyName>
     <RootNamespace>ChestEx</RootNamespace>
     <Version>1.0.0</Version>
     <TargetFramework>net5.0</TargetFramework>
     <EnableHarmony>True</EnableHarmony>
-    <BundleExtraAssemblies>ThirdParty, System</BundleExtraAssemblies>
+    <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
@@ -13,6 +13,6 @@
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3" />
   </ItemGroup>
 </Project>

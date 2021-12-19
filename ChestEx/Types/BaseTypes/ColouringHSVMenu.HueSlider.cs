@@ -75,8 +75,8 @@ namespace ChestEx.Types.BaseTypes {
           using (SKPaint paint = new()) {
             SKRect rect = new(0, 0, mBounds.Width, mBounds.Height);
             paint.Shader = SKShader.CreateLinearGradient(
-              new SKPoint(rect.Left, 0),
-              new SKPoint(rect.Right, 0),
+              new SKPoint(rect.Left, rect.Top),
+              new SKPoint(rect.Left, rect.Bottom),
               new SKColor[] { SKColors.Red, SKColors.Yellow, SKColors.Lime, SKColors.Cyan, SKColors.Blue, SKColors.Magenta, SKColors.Red },
               new float[] {
                   0f,
