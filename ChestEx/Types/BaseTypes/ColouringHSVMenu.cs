@@ -42,10 +42,10 @@ namespace ChestEx.Types.BaseTypes {
         return;
       }
 
-      newColour.AsDotNetColor().ToHSV(out Double hue, out Double sat, out Double val);
-      hue /= 360.0d;
-      sat =  1.0d - sat;
-      val =  1.0d - val;
+      newColour.AsSKColor().ToHsv(out float huef, out float satf, out float valf);
+      double hue =  huef/360.0d;
+      double sat =  1.0d - satf;
+      double val =  1.0d - valf;
 
       this.hueSlider.SetSelectorActiveY((Int32)(this.hueSlider.mBounds.Height * hue));
       this.colourPicker.SetSelectorActivePos(new Point((Int32)(this.colourPicker.mBounds.Width * sat), (Int32)(this.colourPicker.mBounds.Height * val)), fireEvents);

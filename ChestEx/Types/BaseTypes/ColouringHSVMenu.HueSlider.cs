@@ -20,10 +20,12 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//using System.Drawing.Imaging;
 using System.IO;
+
+using SkiaSharp;
 
 using ChestEx.LanguageExtensions;
 
@@ -53,7 +55,7 @@ namespace ChestEx.Types.BaseTypes {
       private readonly Action<Color> onColourHovered;
       private readonly Action<Color> onColourChanged;
 
-      private Bitmap bitmap;
+      private SKBitmap bitmap;
       private Int32  selectorY;
       private Int32  selectorActiveY;
       private Color  selectorColour = Color.Red;
@@ -63,26 +65,20 @@ namespace ChestEx.Types.BaseTypes {
           this.bitmap?.Dispose();
           this.texture?.Dispose();
 
-          this.bitmap = new Bitmap(this.mBounds.Width, this.mBounds.Height);
+          this.bitmap = new SKBitmap(this.mBounds.Width, this.mBounds.Height);
 
           using var      ms = new MemoryStream();
-          using Graphics g  = Graphics.FromImage(this.bitmap);
-          using var gradient =
-            new LinearGradientBrush(new RectangleF(0.0f, 0.0f, this.mBounds.Width, this.mBounds.Height),
-                                    System.Drawing.Color.Transparent,
-                                    System.Drawing.Color.Transparent,
-                                    90.0f) {
-              InterpolationColors = new ColorBlend {
-                Colors = new[] {
-                  System.Drawing.Color.Red,
-                  System.Drawing.Color.Yellow,
-                  System.Drawing.Color.Lime,
-                  System.Drawing.Color.Cyan,
-                  System.Drawing.Color.Blue,
-                  System.Drawing.Color.Magenta,
-                  System.Drawing.Color.Red
-                },
-                Positions = new[] {
+          SKManagedWStream writeableStream = new(ms);
+
+          SKCanvas canvas = new(bitmap);
+
+          using (SKPaint paint = new()) {
+            SKRect rect = new(0, 0, mBounds.Width, mBounds.Height);
+            paint.Shader = SKShader.CreateLinearGradient(
+              new SKPoint(rect.Left, 0),
+              new SKPoint(rect.Right, 0),
+              new SKColor[] { SKColors.Red, SKColors.Yellow, SKColors.Lime, SKColors.Cyan, SKColors.Blue, SKColors.Magenta, SKColors.Red },
+              new float[] {
                   0f,
                   1 / 6f,
                   2 / 6f,
@@ -90,12 +86,11 @@ namespace ChestEx.Types.BaseTypes {
                   4 / 6f,
                   5 / 6f,
                   1f
-                }
-              }
-            };
-          g.FillRectangle(gradient, 0f, 0f, this.mBounds.Width, this.mBounds.Height);
-
-          this.bitmap.Save(ms, ImageFormat.Png);
+                },
+              SKShaderTileMode.Clamp
+              );
+          }
+          bitmap.Encode(writeableStream, SKEncodedImageFormat.Png, 100);
           ms.Seek(0, SeekOrigin.Begin);
 
           this.texture = Texture2D.FromStream(device, ms);
@@ -104,7 +99,10 @@ namespace ChestEx.Types.BaseTypes {
         return this.texture;
       }
 
-      private Color getColourAt(Int32 y) { return this.bitmap.GetPixel(0, Math.Max(0, Math.Min(y, this.mBounds.Height - 1))).AsXNAColor(); }
+      private Color getColourAt(Int32 y) {
+        SKColor color =  this.bitmap.GetPixel(0, Math.Max(0, Math.Min(y, this.mBounds.Height - 1)));
+        return new Color(color.Red, color.Green, color.Blue, color.Alpha);
+      }
 
       private void setSelectorY(Int32 y) {
         if (this.bitmap is null) return;

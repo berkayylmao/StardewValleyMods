@@ -20,10 +20,12 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//using System.Drawing.Imaging;
 using System.IO;
+
+using SkiaSharp;
 
 using ChestEx.LanguageExtensions;
 
@@ -254,12 +256,28 @@ namespace ChestEx.Types.BaseTypes {
       get {
         if (Game1.graphics.GraphicsDevice is null && sVerticalGradient is null) return null;
         if (sVerticalGradient is null) {
-          using var      bitmap         = new Bitmap(1, 128);
+          using var      bitmap         = new SKBitmap(1, 128);
           using var      ms             = new MemoryStream();
-          using Graphics g              = Graphics.FromImage(bitmap);
-          using var      black_gradient = new LinearGradientBrush(new Rectangle(0, 0, 1, 128), Color.White, Color.FromArgb(200, 200, 200), LinearGradientMode.Vertical);
-          g.FillRectangle(black_gradient, 0, 0, 1, 128);
-          bitmap.Save(ms, ImageFormat.Png);
+          SKManagedWStream writeableStream = new(ms) ;
+          //using Graphics g              = Graphics.FromImage(bitmap);
+          //using var      black_gradient = new LinearGradientBrush(new Rectangle(0, 0, 1, 128), Color.White, Color.FromArgb(200, 200, 200), LinearGradientMode.Vertical);
+          //g.FillRectangle(black_gradient, 0, 0, 1, 128);
+          //bitmap.Save(ms, ImageFormat.Png);
+
+          SKCanvas canvas = new(bitmap);
+
+          using (SKPaint paint = new()) {
+            SKRect rect = new(0, 0, 1, 128);
+            paint.Shader = SKShader.CreateLinearGradient(
+              new SKPoint(0,rect.Top),
+              new SKPoint(0,rect.Bottom),
+              new SKColor[] {SKColors.White, SKColors.Black},
+              new float[] { 0, 1 },
+              SKShaderTileMode.Clamp);
+            canvas.DrawRect(rect, paint);
+          }
+
+          bitmap.Encode(writeableStream,SKEncodedImageFormat.Png,100);
           ms.Seek(0, SeekOrigin.Begin);
           sVerticalGradient = Texture2D.FromStream(Game1.graphics.GraphicsDevice, ms);
         }

@@ -296,8 +296,11 @@ namespace ChestEx.LanguageExtensions {
       // Calculate negative colour (of the bg colour) to display coloured text
       Color negative_bg_colour;
       {
-        colours.mBackgroundColour.AsDotNetColor().ToHSV(out Double hue, out Double sat, out Double val);
-        hue = (hue + 180.0d) % 360.0d;
+        colours.mBackgroundColour.AsSKColor().ToHsv(out float huef, out float satf, out float valf);
+        //olours.mBackgroundColour.AsDotNetColor().ToHSV(out Double hue, out Double sat, out Double val);
+        double hue = (huef + 180.0d) % 360.0d;
+        double sat = (double) satf;
+        double val = (double) valf;
         if (colours.mForegroundColour == Color.Black) {
           sat = Math.Min(1.0d,
                          sat

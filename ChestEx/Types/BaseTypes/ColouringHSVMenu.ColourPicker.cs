@@ -20,10 +20,12 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//using System.Drawing.Imaging;
 using System.IO;
+
+using SkiaSharp;
 
 using ChestEx.LanguageExtensions;
 
@@ -54,7 +56,7 @@ namespace ChestEx.Types.BaseTypes {
       private readonly Action<Color> onColourHovered;
       private readonly Action<Color> onColourChanged;
 
-      private Bitmap  bitmap;
+      private SKBitmap  bitmap;
       private Boolean selectorIsVisible = true;
       private Point   selectorPos       = Point.Zero;
       private Point   selectorActivePos = Point.Zero;
@@ -65,22 +67,24 @@ namespace ChestEx.Types.BaseTypes {
           this.bitmap?.Dispose();
           this.texture?.Dispose();
 
-          this.bitmap = new Bitmap(this.mBounds.Width, this.mBounds.Height);
+          this.bitmap = new SKBitmap(this.mBounds.Width, this.mBounds.Height);
+          using var ms = new MemoryStream();
+          SKManagedWStream writeableStream = new(ms);
+          SKCanvas canvas = new(bitmap);
+          
+          using (SKPaint paint = new()) {
+            SKRect rect = new SKRect(0, 0, this.mBounds.Width, this.mBounds.Height);
+            paint.Shader = SKShader.CreateLinearGradient(
+              new SKPoint(rect.Left, rect.Top),
+              new SKPoint(rect.Right, rect.Top),
+              new SKColor[] { SKColors.White, this.hueColour.AsSKColor(), SKColors.Black },
+              new float[] {0, 0.5f, 1},
+              SKShaderTileMode.Clamp
+              );
+            canvas.DrawRect(rect, paint);
+          }
 
-          using var      ms = new MemoryStream();
-          using Graphics g  = Graphics.FromImage(this.bitmap);
-          using var white_gradient = new LinearGradientBrush(new RectangleF(0.0f, 0.0f, this.mBounds.Width, this.mBounds.Height),
-                                                             System.Drawing.Color.Transparent,
-                                                             System.Drawing.Color.White,
-                                                             0.0f);
-          using var black_gradient = new LinearGradientBrush(new RectangleF(0.0f, 0.0f, this.mBounds.Width, this.mBounds.Height),
-                                                             System.Drawing.Color.Transparent,
-                                                             System.Drawing.Color.FromArgb(255, 1, 1, 1),
-                                                             90.0f);
-          g.FillRectangle(new SolidBrush(this.hueColour.AsDotNetColor()), 0.0f, 0.0f, this.mBounds.Width, this.mBounds.Height);
-          g.FillRectangle(white_gradient, 0f, 0f, this.mBounds.Width, this.mBounds.Height);
-          g.FillRectangle(black_gradient, 0f, 0f, this.mBounds.Width, this.mBounds.Height);
-          this.bitmap.Save(ms, ImageFormat.Png);
+          bitmap.Encode(writeableStream, SKEncodedImageFormat.Png, 100);
           ms.Seek(0, SeekOrigin.Begin);
           this.texture = Texture2D.FromStream(device, ms);
         }
@@ -89,7 +93,8 @@ namespace ChestEx.Types.BaseTypes {
       }
 
       private Color getColourAt(Point position) {
-        return this.bitmap.GetPixel(Math.Max(0, Math.Min(position.X, this.mBounds.Width - 1)), Math.Max(0, Math.Min(position.Y, this.mBounds.Height - 1))).AsXNAColor();
+        SKColor mycolor = this.bitmap.GetPixel(Math.Max(0, Math.Min(position.X, this.mBounds.Width - 1)), Math.Max(0, Math.Min(position.Y, this.mBounds.Height - 1)));
+        return new Color(mycolor.Red, mycolor.Green, mycolor.Blue, mycolor.Alpha);      
       }
 
       private void setSelectorPos(Point position) {
@@ -140,10 +145,12 @@ namespace ChestEx.Types.BaseTypes {
 
         // Draw the selector
         if (this.selectorIsVisible) {
+          SKColor skColor = this.bitmap.GetPixel(this.selectorPos.X, this.selectorPos.Y);
+          Color newcolor = new(skColor.Red, skColor.Green, skColor.Blue, skColor.Alpha);
           spriteBatch.Draw(TexturePresets.gCursorsGrayScale,
                            new Rectangle(this.mBounds.X + this.selectorPos.X, this.mBounds.Y + this.selectorPos.Y, CONST_SELECTOR_SIZE, CONST_SELECTOR_SIZE),
                            new Rectangle(205, 1888, 12, 12),
-                           this.bitmap.GetPixel(this.selectorPos.X, this.selectorPos.Y).ContrastColour().AsXNAColor());
+                           newcolor.ContrastColour());
         }
       }
 

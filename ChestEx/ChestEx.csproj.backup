@@ -97,7 +97,8 @@
     <Compile Include="Patches\Chest.cs" />
     <Compile Include="Patches\ItemGrabMenu.cs" />
     <Compile Include="Types\BaseTypes\ColouringHSVMenu.ColourPicker.cs" />
-    <Compile Include="Types\BaseTypes\ColouringHSVMenu.HueSlider.cs" />
+    <Compile Include="Types\BaseTypes\ColouringHSVMenu.
+             .cs" />
     <Compile Include="Types\BaseTypes\ColouringMenuSwitcher.cs" />
     <Compile Include="Types\BaseTypes\CustomChestConfig.cs" />
     <Compile Include="Types\BaseTypes\Colours.cs" />

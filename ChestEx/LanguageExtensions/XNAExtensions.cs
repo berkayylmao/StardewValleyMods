@@ -23,6 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using SkiaSharp;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -65,6 +67,10 @@ namespace ChestEx.LanguageExtensions {
     }
 
     public static System.Drawing.Color AsDotNetColor(this Color colour) { return System.Drawing.Color.FromArgb(colour.A, colour.R, colour.G, colour.B); }
+
+    public static SKColor AsSKColor(this Color colour) {
+      return new SKColor(colour.R, colour.G, colour.B, colour.A);
+    }
 
     public static String AsHexCode(this Color colour) { return $"{colour.R:X2}{colour.G:X2}{colour.B:X2}"; }
 
