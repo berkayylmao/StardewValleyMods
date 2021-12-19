@@ -29,7 +29,7 @@ using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
 using ChestEx.Types.CustomTypes.ChestExMenu;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 

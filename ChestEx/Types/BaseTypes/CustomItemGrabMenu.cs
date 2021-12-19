@@ -27,7 +27,7 @@ using System.Linq;
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
@@ -162,7 +162,7 @@ namespace ChestEx.Types.BaseTypes {
 
       if (createChestColorPicker) {
         this.chestColorPicker                = new DiscreteColorPicker(source_menu_bounds.X + 16, source_menu_bounds.Y - 16, 0, new Chest(true));
-        this.chestColorPicker.colorSelection = this.chestColorPicker.getSelectionFromColor(this.GetSourceAs<Chest>().playerChoiceColor);
+        this.chestColorPicker.colorSelection = this.chestColorPicker.getSelectionFromColor(this.GetSourceAs<Chest>().playerChoiceColor.Value);
         // TODO: this crashes?
         ((Chest)this.chestColorPicker.itemToDrawColored).playerChoiceColor.Value = this.chestColorPicker.getColorFromSelection(this.chestColorPicker.colorSelection);
 

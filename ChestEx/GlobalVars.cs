@@ -21,7 +21,7 @@
 
 using System;
 
-using Harmony;
+using HarmonyLib;
 
 using Microsoft.Xna.Framework;
 
@@ -35,7 +35,7 @@ namespace ChestEx {
 
     public const String CONST_MOD_UID = "berkayylmao.ChestEx";
 
-    public static HarmonyInstance gHarmony;
+    public static Harmony gHarmony;
 
   #endregion
 

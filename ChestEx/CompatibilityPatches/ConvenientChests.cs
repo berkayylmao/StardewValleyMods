@@ -28,7 +28,7 @@ using System.Reflection.Emit;
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 

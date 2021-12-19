@@ -21,7 +21,7 @@
 
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
@@ -33,7 +33,7 @@ namespace ChestEx {
     public override void Entry(IModHelper helper) {
       GlobalVars.gSMAPIHelper  = helper;
       GlobalVars.gSMAPIMonitor = this.Monitor;
-      GlobalVars.gHarmony      = HarmonyInstance.Create("mod.berkayylmao.ChestEx");
+      GlobalVars.gHarmony      = new Harmony("mod.berkayylmao.ChestEx");
 
       // Config
       {

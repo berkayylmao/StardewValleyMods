@@ -25,7 +25,7 @@ using System.Linq;
 
 using ChestEx.LanguageExtensions;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 

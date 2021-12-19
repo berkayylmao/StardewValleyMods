@@ -27,7 +27,7 @@ using ChestEx.Types.BaseTypes;
 using ChestEx.Types.CustomTypes.ChestExMenu;
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
