@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -26,10 +26,10 @@ using StardewModdingAPI;
 namespace ChestEx.CompatibilityPatches {
   internal class CompatibilityPatch {
     // Private:
-  #region Private
+    #region Private
 
-    private          String           name;
-    private readonly String           uid;
+    private String name;
+    private readonly String uid;
     private readonly ISemanticVersion version;
 
     private void printInfo() {
@@ -59,13 +59,13 @@ namespace ChestEx.CompatibilityPatches {
 
     private void endLog() { GlobalVars.gSMAPIMonitor.Log("Finished installing compatibility patches.", LogLevel.Info); }
 
-  #endregion
+    #endregion
 
     // Protected:
-  #region Protected
+    #region Protected
 
     // Virtuals:
-  #region Virtuals
+    #region Virtuals
 
     protected virtual void InstallPatches() { }
 
@@ -74,25 +74,25 @@ namespace ChestEx.CompatibilityPatches {
       this.endLog();
     }
 
-  #endregion
+    #endregion
 
-  #endregion
+    #endregion
 
     // Public:
-  #region Public
+    #region Public
 
     public void Install() { this.printInfo(); }
 
-  #endregion
+    #endregion
 
     // Constructors:
-  #region Constructors
+    #region Constructors
 
     internal CompatibilityPatch(String uid, ISemanticVersion version) {
-      this.uid     = uid;
+      this.uid = uid;
       this.version = version;
     }
 
-  #endregion
+    #endregion
   }
 }

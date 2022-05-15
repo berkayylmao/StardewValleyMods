@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -28,7 +28,7 @@ using System.Reflection.Emit;
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
@@ -48,8 +48,8 @@ namespace ChestEx.Patches {
                                                           new[] {
                                                             typeof(InventoryMenu.highlightThisItem), typeof(Boolean), typeof(Boolean), typeof(Int32), typeof(Int32), typeof(Int32)
                                                           });
-      Boolean patched  = false;
-      Label   lbl_skip = ilg.DefineLabel();
+      Boolean patched = false;
+      Label lbl_skip = ilg.DefineLabel();
 
       foreach (CodeInstruction instruction in instructions) {
         if (!patched && instruction.opcode == OpCodes.Call && (MethodBase)instruction.operand == base_ctor) {

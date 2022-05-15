@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -28,7 +28,7 @@ using System.Reflection.Emit;
 using ChestEx.LanguageExtensions;
 using ChestEx.Types.BaseTypes;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
@@ -42,7 +42,7 @@ using Object = System.Object;
 namespace ChestEx.CompatibilityPatches {
   // TODO: fix the button being behind the dark background
   internal class RemoteFridgeStorage : CompatibilityPatch {
-  #region Patches
+    #region Patches
 
     [HarmonyPatch]
     private static class ChestController {
@@ -55,8 +55,8 @@ namespace ChestEx.CompatibilityPatches {
         if (Game1.activeClickableMenu is not CustomItemGrabMenu menu) return;
 
         Traverse.Create(____config).Property<Boolean>("OverrideOffset").Value = true;
-        Traverse.Create(____config).Property<Int32>("XOffset").Value          = menu.mSourceInventoryOptions.mDialogueBoxBounds.X - 64;
-        Traverse.Create(____config).Property<Int32>("YOffset").Value          = menu.mSourceInventoryOptions.mDialogueBoxBounds.Y + 96;
+        Traverse.Create(____config).Property<Int32>("XOffset").Value = menu.mSourceInventoryOptions.mDialogueBoxBounds.X - 64;
+        Traverse.Create(____config).Property<Int32>("YOffset").Value = menu.mSourceInventoryOptions.mDialogueBoxBounds.Y + 96;
       }
 
       [HarmonyTranspiler]
@@ -102,7 +102,7 @@ namespace ChestEx.CompatibilityPatches {
         foreach (CodeInstruction instruction in instructions) {
           if (!patched && instruction.opcode == OpCodes.Callvirt && (MethodInfo)instruction.operand == AccessTools.Method(typeof(IDisplayEvents), "add_RenderingActiveMenu")) {
             instruction.operand = AccessTools.Method(typeof(IDisplayEvents), "add_RenderedActiveMenu");
-            patched             = true;
+            patched = true;
           }
 
           yield return instruction;
@@ -117,10 +117,10 @@ namespace ChestEx.CompatibilityPatches {
       }
     }
 
-  #endregion
+    #endregion
 
     // Protected:
-  #region Protected
+    #region Protected
 
     protected override void InstallPatches() {
       ChestController.Install();
@@ -133,14 +133,14 @@ namespace ChestEx.CompatibilityPatches {
       base.OnLoaded();
     }
 
-  #endregion
+    #endregion
 
     // Constructors:
-  #region Constructors
+    #region Constructors
 
     internal RemoteFridgeStorage()
-      : base("EternalSoap.RemoteFridgeStorage", new SemanticVersion("1.8.1")) { }
+      : base("EternalSoap.RemoteFridgeStorage", new SemanticVersion("1.9.0")) { }
 
-  #endregion
+    #endregion
   }
 }

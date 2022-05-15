@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,7 @@
 
 using System;
 
-using Harmony;
+using HarmonyLib;
 
 using Microsoft.Xna.Framework;
 
@@ -31,15 +31,15 @@ using StardewValley;
 
 namespace ChestEx {
   public static class GlobalVars {
-  #region Mod
+    #region Mod
 
     public const String CONST_MOD_UID = "berkayylmao.ChestEx";
 
-    public static HarmonyInstance gHarmony;
+    public static Harmony gHarmony;
 
-  #endregion
+    #endregion
 
-  #region Stardew Valley
+    #region Stardew Valley
 
     public static Rectangle gUIViewport {
       get {
@@ -51,7 +51,7 @@ namespace ChestEx {
 
     public static Rectangle gGameViewport => Utility.getSafeArea();
 
-  #region Events
+    #region Events
 
     // public delegate void             ObjectAction(GameLocation location, Vector2 tile);
     // public static event ObjectAction ObjectPlaced;
@@ -60,27 +60,27 @@ namespace ChestEx {
     // public static void OnObjectPlaced(GameLocation  location, Vector2 tile) { ObjectPlaced?.Invoke(location, tile); }
     // public static void OnObjectRemoved(GameLocation location, Vector2 tile) { ObjectRemoved?.Invoke(location, tile); }
 
-  #endregion
+    #endregion
 
-  #endregion
+    #endregion
 
-  #region SMAPI
+    #region SMAPI
 
     public static IModHelper gSMAPIHelper;
-    public static IMonitor   gSMAPIMonitor;
+    public static IMonitor gSMAPIMonitor;
 
-  #endregion
+    #endregion
 
-  #region Compatibilities
+    #region Compatibilities
 
     public static Boolean gIgnoreInput = false;
 
-    public static Boolean gIsAutomateLoaded            = false;
-    public static Boolean gIsChestsAnywhereLoaded      = false;
-    public static Boolean gIsConvenientChestsLoaded    = false;
-    public static Boolean gIsExpandedStorageLoaded     = false;
+    public static Boolean gIsAutomateLoaded = false;
+    public static Boolean gIsChestsAnywhereLoaded = false;
+    public static Boolean gIsConvenientChestsLoaded = false;
+    public static Boolean gIsExpandedStorageLoaded = false;
     public static Boolean gIsRemoteFridgeStorageLoaded = false;
 
-  #endregion
+    #endregion
   }
 }

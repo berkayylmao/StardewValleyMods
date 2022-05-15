@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -27,7 +27,7 @@ using ChestEx.Types.BaseTypes;
 using ChestEx.Types.CustomTypes.ChestExMenu;
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 

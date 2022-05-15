@@ -2,7 +2,7 @@
 
 // 
 //    ChestEx (StardewValleyMods)
-//    Copyright (c) 2021 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,7 @@
 
 using ChestEx.Types.CustomTypes.ExtendedSVObjects;
 
-using Harmony;
+using HarmonyLib;
 
 using JetBrains.Annotations;
 
@@ -31,15 +31,15 @@ namespace ChestEx {
   [UsedImplicitly]
   public class Main : Mod {
     public override void Entry(IModHelper helper) {
-      GlobalVars.gSMAPIHelper  = helper;
+      GlobalVars.gSMAPIHelper = helper;
       GlobalVars.gSMAPIMonitor = this.Monitor;
-      GlobalVars.gHarmony      = HarmonyInstance.Create("mod.berkayylmao.ChestEx");
+      GlobalVars.gHarmony = new Harmony("mod.berkayylmao.ChestEx");
 
       // Config
       {
         Config.Load();
         helper.Events.Multiplayer.PeerContextReceived += Config.PlayerConnecting;
-        helper.Events.Multiplayer.ModMessageReceived  += Config.MPDataReceived;
+        helper.Events.Multiplayer.ModMessageReceived += Config.MPDataReceived;
       }
 
       // Main Patches
