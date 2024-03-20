@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>ChestEx</AssemblyName>
     <RootNamespace>ChestEx</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <EnableHarmony>True</EnableHarmony>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>berkayylmao</Authors>
