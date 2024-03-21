@@ -3,7 +3,7 @@
 // clang-format off
 // 
 //    ShipAnything (StardewValleyMods)
-//    Copyright (c) 2022 Berkay Yigit <berkaytgy@gmail.com>
+//    Copyright (c) 2024 Berkay Yigit <mail@berkay.link>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 using HarmonyLib;
@@ -37,9 +38,6 @@ using StardewModdingAPI;
 
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.Buildings;
-using StardewValley.SpecialOrders;
-using StardewValley.Tools;
 
 namespace ShipAnything {
   [UsedImplicitly]
@@ -103,7 +101,7 @@ namespace ShipAnything {
       public static class SVObject {
         [HarmonyPrefix]
         [UsedImplicitly]
-        // ReSharper disable once InconsistentNaming
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static Boolean prefix_canBeShipped(StardewValley.Object __instance, ref Boolean __result) {
           __result = __instance.Type != null && !__instance.Type.Equals("Quest");
           return false;
@@ -113,7 +111,7 @@ namespace ShipAnything {
       public static class SVUtility {
         [HarmonyPrefix]
         [UsedImplicitly]
-        // ReSharper disable once InconsistentNaming
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static Boolean prefix_highlightShippableObjects(ref Boolean __result) {
           __result = true;
           return false;
@@ -124,7 +122,7 @@ namespace ShipAnything {
 
         [HarmonyPostfix]
         [UsedImplicitly]
-        // ReSharper disable once InconsistentNaming
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static void postfix_parseItems(IList<Item> items, ref List<List<Item>> ___categoryItems, ref List<Int32> ___categoryTotals, ref List<MoneyDial> ___categoryDials,
                                               ref Dictionary<Item, Int32> ___itemValues, ref Dictionary<Item, Int32> ___singleItemValues) {
           const Int32 misc_category = 4; // Misc. category
@@ -161,7 +159,7 @@ namespace ShipAnything {
       public static class SVGame1 {
         [HarmonyPrefix]
         [UsedImplicitly]
-        // ReSharper disable once InconsistentNaming
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static Boolean prefix__newDayAfterFade() {
 
           if (Game1.player.useSeparateWallets || Game1.player.IsMainPlayer) {
