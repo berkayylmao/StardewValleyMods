@@ -1,4 +1,4 @@
-﻿#region License
+﻿ #region License
 
 // clang-format off
 // 
@@ -40,8 +40,13 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 
 namespace ShipAnything {
+  public static class Globals {
+    public static StardewModdingAPI.IMonitor SMAPIMonitor = null;
+  }
+
   [UsedImplicitly]
   public class Main : Mod {
+
     public static class Extensions {
       private sealed class SVObjectEx : StardewValley.Object {
         private delegate void DrawInMenuDelegate(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency,
@@ -129,25 +134,31 @@ namespace ShipAnything {
           const Int32 total_category = 5; // Total category
 
           foreach (Item item in items) {
-            if (item is StardewValley.Object) continue;
+            if (item is StardewValley.Object || item is null) continue;
 
-            var obj_ex = new SVObjectEx(item);
-            Int32 sell_to_store_price = obj_ex.sellToStorePrice();
-            Int32 price = sell_to_store_price * obj_ex.Stack;
+            try {
+              var obj_ex = new SVObjectEx(item);
+              Int32 sell_to_store_price = obj_ex.sellToStorePrice();
+              Int32 price = sell_to_store_price * obj_ex.Stack;
 
-            ___categoryItems[misc_category].Add(obj_ex); // Add item to misc.
-            ___categoryItems[total_category].Add(obj_ex); // Add item to total
+              ___categoryItems[misc_category].Add(obj_ex); // Add item to misc.
+              ___categoryItems[total_category].Add(obj_ex); // Add item to total
 
-            ___categoryTotals[misc_category] += price;
-            ___categoryTotals[total_category] += price;
+              ___categoryTotals[misc_category] += price;
+              ___categoryTotals[total_category] += price;
 
-            ___itemValues[obj_ex] = price;
-            ___singleItemValues[obj_ex] = sell_to_store_price;
+              ___itemValues[obj_ex] = price;
+              ___singleItemValues[obj_ex] = sell_to_store_price;
 
-            Game1.stats.ItemsShipped += Convert.ToUInt32(obj_ex.Stack);
+              Game1.stats.ItemsShipped += Convert.ToUInt32(obj_ex.Stack);
 
-            if (obj_ex.countsForShippedCollection())
-              Game1.player.shippedBasic(obj_ex.ItemId, obj_ex.Stack);
+              if (obj_ex.countsForShippedCollection())
+                Game1.player.shippedBasic(obj_ex.ItemId, obj_ex.Stack);
+            }
+            catch (Exception ex) {
+              Globals.SMAPIMonitor.Log("An exception occured while processing an item at 'StardewValley.Menus.ShippingMenu.parseItems(IList<StardewValley.Item>)'! Skipping this item...", LogLevel.Error);
+              Globals.SMAPIMonitor.Log($"Here is the thrown exception:\n\t{ex.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}\t")}", LogLevel.Trace);
+            }
           }
           ___categoryDials[misc_category].previousTargetValue = ___categoryDials[misc_category].currentValue = ___categoryTotals[misc_category];
           ___categoryDials[total_category].currentValue = ___categoryTotals[total_category];
@@ -204,6 +215,8 @@ namespace ShipAnything {
     }
 
     public override void Entry(IModHelper helper) {
+      Globals.SMAPIMonitor = this.Monitor;
+
       var harmony = new Harmony("mod.berkayylmao.ShipAnything");
       harmony.Patch(AccessTools.Method(typeof(StardewValley.Object), "canBeShipped"), new HarmonyMethod(AccessTools.Method(typeof(Extensions.SVObject), "prefix_canBeShipped")));
       harmony.Patch(AccessTools.Method(typeof(Utility), "highlightShippableObjects"),
