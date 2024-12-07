@@ -3,7 +3,7 @@
 // clang-format off
 // 
 //    ShipAnything (StardewValleyMods)
-//    Copyright (c) 2024 Berkay Yigit <mail@berkay.link>
+//    Copyright (c) 2024 Berkay Yigit <contact@withberkay.com>
 // 
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as published
