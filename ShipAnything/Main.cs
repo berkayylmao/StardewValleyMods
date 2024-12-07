@@ -1,4 +1,4 @@
-﻿ #region License
+﻿#region License
 
 // clang-format off
 // 
@@ -76,6 +76,25 @@ namespace ShipAnything {
         }
 
         public SVObjectEx(Item item) {
+          if (item is null) {
+            var dummy = ItemRegistry.GetDataOrErrorItem("error");
+
+            this.orgCall = null;
+
+            this.Category = 4; // Misc. category
+            this.displayName = dummy.DisplayName;
+            this.HasBeenInInventory = false;
+            this.ItemId = dummy.ItemId;
+            this.Name = dummy.DisplayName;
+            this.ParentSheetIndex = dummy.SpriteIndex;
+            this.Price = 0;
+            this.specialItem = false;
+            this.SpecialVariable = 0;
+            this.Stack = 0;
+
+            return;
+          }
+
           this.orgCall = item.drawInMenu;
 
           this.Category = 4; // Misc. category
@@ -92,14 +111,15 @@ namespace ShipAnything {
 
         public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, Single scaleSize, Single transparency,
                                         Single layerDepth, StackDrawType drawStackNumber, Color color, Boolean drawShadow) {
-          this.orgCall(spriteBatch,
-                       location,
-                       scaleSize,
-                       transparency,
-                       layerDepth,
-                       drawStackNumber,
-                       color,
-                       drawShadow);
+          if (this.orgCall is not null)
+            this.orgCall(spriteBatch,
+                         location,
+                         scaleSize,
+                         transparency,
+                         layerDepth,
+                         drawStackNumber,
+                         color,
+                         drawShadow);
         }
       }
 
@@ -172,18 +192,23 @@ namespace ShipAnything {
         [UsedImplicitly]
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static Boolean prefix__newDayAfterFade() {
-
           if (Game1.player.useSeparateWallets || Game1.player.IsMainPlayer) {
             var shipping_bin = Game1.getFarm().getShippingBin(Game1.player);
             Int32 extra_gained = 0;
 
             foreach (Item item in shipping_bin) {
-              if (item is StardewValley.Object) continue;
+              if (item is StardewValley.Object || item is null) continue;
 
-              var obj_ex = new SVObjectEx(item);
-              Int32 sell_to_store_price = obj_ex.sellToStorePrice();
-              Int32 price = sell_to_store_price * obj_ex.Stack;
-              extra_gained += price;
+              try {
+                var obj_ex = new SVObjectEx(item);
+                Int32 sell_to_store_price = obj_ex.sellToStorePrice();
+                Int32 price = sell_to_store_price * obj_ex.Stack;
+                extra_gained += price;
+              }
+              catch (Exception ex) {
+                Globals.SMAPIMonitor.Log("An exception occured while processing an item at 'StardewValley.Game1._newDayAfterFade()'! Skipping this item...", LogLevel.Error);
+                Globals.SMAPIMonitor.Log($"Here is the thrown exception:\n\t{ex.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}\t")}", LogLevel.Trace);
+              }
             }
 
             Game1.player.Money += extra_gained;
@@ -197,12 +222,18 @@ namespace ShipAnything {
               var shipping_bin = Game1.getFarm().getShippingBin(who2);
               Int32 extra_gained = 0;
               foreach (Item item in shipping_bin) {
-                if (item is StardewValley.Object) continue;
+                if (item is StardewValley.Object || item is null) continue;
 
-                var obj_ex = new SVObjectEx(item);
-                Int32 sell_to_store_price = obj_ex.sellToStorePrice();
-                Int32 price = sell_to_store_price * obj_ex.Stack;
-                extra_gained += price;
+                try {
+                  var obj_ex = new SVObjectEx(item);
+                  Int32 sell_to_store_price = obj_ex.sellToStorePrice();
+                  Int32 price = sell_to_store_price * obj_ex.Stack;
+                  extra_gained += price;
+                }
+                catch (Exception ex) {
+                  Globals.SMAPIMonitor.Log("An exception occured while processing an item at 'StardewValley.Game1._newDayAfterFade()'! Skipping this item...", LogLevel.Error);
+                  Globals.SMAPIMonitor.Log($"Here is the thrown exception:\n\t{ex.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}\t")}", LogLevel.Trace);
+                }
               }
 
               Game1.player.team.AddIndividualMoney(who2, extra_gained);
